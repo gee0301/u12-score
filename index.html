@@ -506,6 +506,17 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .period-team-fouls{margin:5px 0 9px;padding:7px 8px;border-radius:8px;background:#252d36;border:1px solid #5a687a;color:#fff0b0;font-size:clamp(12px,1.4vw,16px);font-weight:800;text-align:center}
 .period-team-fouls strong{font-size:1.25em;color:#ffe17c}
 @media(max-width:700px){.period-team-fouls{font-size:12px;padding:6px 3px}.court-foul-count{margin-left:3px;padding:1px 4px}}
+
+/* Ver.49: Qごとの全履歴を記録画面の下に表示 */
+#record .recent-card .log{max-height:none!important;overflow:visible!important}
+#record .recent-card .logrow{grid-template-columns:minmax(38px,60px) minmax(0,1fr) auto;gap:8px;min-height:48px;align-items:center}
+#record .history-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+#record .history-actions button{min-height:42px;padding:6px 9px;font-size:12px}
+#record .history-actions .edit-event-btn{border-color:#8bafd4;background:#344e6a;color:white}
+#record .history-period-picker{min-width:115px;font-size:12px}
+#record .history-period-picker select{min-height:42px;margin-top:3px}
+.edit-history-dialog label{margin-top:10px}
+@media(max-width:600px){#record .recent-card .logrow{grid-template-columns:40px minmax(0,1fr);gap:5px}#record .history-actions{grid-column:2;justify-content:flex-start}#record .history-actions button{min-width:64px}}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -525,7 +536,7 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 <div class="card center-commands"><h2>記録コマンド</h2><div class="selected-banner" id="selectedBanner">中央のコマンドを選び、左右の選手をタップ</div><p class="muted" style="margin:10px 0">① 中央のコマンドを選択 → ② 左右の出場選手をタップ</p><div class="statgrid" id="commandStats"></div><p class="muted" id="commandHint">出場中の選手を選び、中央のコマンドを押してください。</p></div>
 <div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" onclick="startSwap('away')">⇄ 交代</button><button onclick="openSub('away')">5人一括変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="awayBench"></div></div>
 </div>
-<div class="card recent-card"><div class="recent-heading"><h2>直近の記録（最新2件）</h2><button type="button" onclick="openEventHistory()">履歴を見る（全件）</button></div><div class="log" id="eventLog"></div><p class="muted">直近2件はここで取消できます。それ以前の記録は「履歴を見る」から確認・取消できます。</p></div>
+<div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴（全件）</h2><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
 <div class="toolbar no-print"><button onclick="show('setup')">選手・設定を変更</button><button class="primary" onclick="show('report')">集計を見る</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div>
 </section>
 <section id="report" class="page">
@@ -566,6 +577,7 @@ function nextSetupWizard(){
 
 let state={matchType:'',eventName:'',gameDate:'',gameTime:'',homeName:'自チーム',awayName:'相手チーム',home:[],away:[],events:[]};
 let lineupWizard=null;
+let historyPeriod=1;
 let currentPeriod=1,selectedTeam='home',selectedPlayer=null,entryMode='event',pendingCode=null,swapTeam=null,swapOut=null;
 const statDefs=[['2PM','2点IN ②',2],['2PA','2点OUT 2',0],['FT','FT（本数指定）',0],['3PM','3点IN ③',3],['3PA','3点OUT 3',0],['OREB','OR',0],['DREB','DR',0],['PF','F ファール',0],['BLK','ブロック',0],['AST','Ass A',0],['STL','Stel',0],['TO_DRIBBLE','TO ドリブルミス D',0],['TO_PASS','TO パスミス P',0],['TO_TRAVEL','TO トラベリング T',0]];
 function $(id){return document.getElementById(id)}
@@ -627,7 +639,7 @@ function markParticipation(t,period=currentPeriod){
 function changeQuarter(value){
  const target=Number(value);
  if(!Number.isInteger(target)||target<1||target>regulationPeriods()+3)return;
- if(target===currentPeriod){refresh();return}
+ if(target===currentPeriod){historyPeriod=target;refresh();return}
  if(lineupWizard)return;
  beginQuarterLineup(target,false);
 }
@@ -659,7 +671,7 @@ function nextQuarterLineup(){
  w.choices[t]=arr;
  if(w.step===0){w.step=1;showQuarterLineupStep();return}
  // 両チームの5人が揃うまで、ピリオドと出場記録を更新しない。
- currentPeriod=w.target;
+ currentPeriod=w.target;historyPeriod=currentPeriod;
  state.lineups.home=[...w.choices.home];
  state.lineups.away=[...w.choices.away];
  for(const side of ['home','away'])markParticipation(side,currentPeriod);
@@ -704,7 +716,7 @@ function refresh(){
  const defs=statDefs; // 3Pは常時有効（試合設定で切替しない）
  $('commandStats').innerHTML=defs.map(d=>`<button data-code="${d[0]}" data-group="${['2PM','2PA','3PM','3PA','FT'].includes(d[0])?'shoot':['OREB','DREB'].includes(d[0])?'rebound':d[0].startsWith('TO')?'turnover':'other'}" class="statbtn ${pendingCode===d[0]?'sel':''}" onclick="chooseCommand('${d[0]}')"><b>${d[1]}</b><small>${d[2]?'+'+d[2]+'点':'記録'}</small></button>`).join('');
  $('commandHint').textContent=swapTeam?'交代中です。出場選手→控え選手で交代。交代ボタンでも中止できます。':pendingCode?'左右どちらかの出場中の選手をタップして記録してください。コマンドを再タップすると選択解除できます。':'中央のコマンドをタップしてから、左右の出場選手をタップしてください。';
- let log=state.events.slice(-2).reverse();$('eventLog').innerHTML=log.map(e=>eventLogRow(e)).join('')||'<p class="muted">まだ記録がありません。</p>';
+ renderQuarterHistory();
 }
 function record(code,forcedTeam=null,forcedPlayer=null){let t=forcedTeam||selectedTeam;let i=forcedPlayer!==null?forcedPlayer:selectedPlayer;if(i===null||!state[t][i]){alert('先に出場中の選手を選択してください');return}
  let d=statDefs.find(x=>x[0]===code);if(!d)return;
@@ -741,10 +753,39 @@ function commitFTShots(){
  results.forEach((success,j)=>state.events.push({id:Date.now()+'_'+Math.random()+'_'+j,team:t,playerIndex:i,player:playerLabel(state[t][i]),code:success?'FTM':'FTA',ftBatch:batchId,ftShotNumber:j+1,label:success?'FT IN ①':'FT OUT 1',points:success?1:0,period:currentPeriod,time:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}));
  ftTotal=0;window.ftResults=[];pendingCode=null;selectedPlayer=null;saveAll();closeModal();refresh();
 }
-function eventLogRow(e){return `<div class="logrow"><span>${periodName(Number(e.period))}</span><span>${esc(teamLabel(e.team))} ${esc(e.player)}：${esc(e.label)}</span><button type="button" class="undo-event-btn" data-event-id="${esc(e.id)}">取消</button></div>`}
-function openEventHistory(){
- const rows=state.events.slice().reverse();
- openModal(`<div class="history-dialog"><h2>記録履歴（${rows.length}件）</h2><p class="muted">最新の記録から表示しています。各記録の「取消」で訂正できます。</p><div class="history-list">${rows.map(e=>eventLogRow(e)).join('')||'<p class="muted">まだ記録がありません。</p>'}</div><div class="toolbar"><button onclick="closeModal()">閉じる</button></div></div>`);
+function setHistoryPeriod(value){historyPeriod=value==='all'?'all':Number(value);renderQuarterHistory()}
+function renderQuarterHistory(){
+ const picker=$('historyPeriodSelect');if(!picker)return;
+ const periods=allPeriods();const valid=historyPeriod==='all'||periods.includes(Number(historyPeriod));if(!valid)historyPeriod=currentPeriod;
+ picker.innerHTML=periods.map(p=>`<option value="${p}">${periodName(p)}</option>`).join('')+'<option value="all">全Q</option>';
+ picker.value=String(historyPeriod);
+ const rows=state.events.filter(e=>historyPeriod==='all'||Number(e.period)===Number(historyPeriod)).slice().reverse();
+ $('eventLog').innerHTML=rows.map(e=>eventLogRow(e)).join('')||'<p class="muted">このQの記録はまだありません。</p>';
+}
+function eventLogRow(e){
+ const player=state[e.team]?.[e.playerIndex];const name=player?playerLabel(player):(e.player||'選手不明');
+ return `<div class="logrow"><span>${esc(periodName(Number(e.period)))}</span><span>${esc(teamLabel(e.team))} ${esc(name)}：${esc(e.label)} <small class="muted">${esc(e.time||'')}</small></span><span class="history-actions"><button type="button" class="edit-event-btn" data-event-id="${esc(e.id)}">訂正</button><button type="button" class="undo-event-btn" data-event-id="${esc(e.id)}">取消</button></span></div>`;
+}
+function openEventHistory(){historyPeriod='all';renderQuarterHistory();show('record');document.querySelector('.recent-card')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function editEvent(id){
+ const e=state.events.find(x=>String(x.id)===String(id));if(!e){alert('記録が見つかりません');return}
+ const codes=statDefs.filter(d=>d[0]!=='FT').map(d=>({code:d[0],label:d[1]}));
+ codes.push({code:'FTM',label:'FT IN ①'},{code:'FTA',label:'FT OUT 1'});
+ const playerOptions=t=>state[t].map((p,i)=>`<option value="${i}">${esc(playerLabel(p))}</option>`).join('');
+ openModal(`<div class="edit-history-dialog"><h2>記録の訂正</h2><p class="muted">変更内容を保存すると得点・個人ファール・チームファールも再計算します。FTの訂正は1投単位です。</p><label>Q<select id="editEventPeriod">${allPeriods().map(p=>`<option value="${p}">${periodName(p)}</option>`).join('')}</select></label><label>チーム<select id="editEventTeam" onchange="updateEditEventPlayers()"><option value="home">自チーム</option><option value="away">相手チーム</option></select></label><label>選手<select id="editEventPlayer"></select></label><label>記録項目<select id="editEventCode">${codes.map(d=>`<option value="${d.code}">${esc(d.label)}</option>`).join('')}</select></label><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="saveEditedEvent()">訂正を保存</button><button onclick="closeModal()">戻る</button></div></div>`);
+ window.editingEventId=String(e.id);$('editEventPeriod').value=String(e.period);$('editEventTeam').value=e.team;updateEditEventPlayers();$('editEventPlayer').value=String(e.playerIndex);$('editEventCode').value=e.code;
+}
+function updateEditEventPlayers(){const t=$('editEventTeam').value;$('editEventPlayer').innerHTML=state[t].map((p,i)=>`<option value="${i}">${esc(playerLabel(p))}</option>`).join('')}
+function saveEditedEvent(){
+ const e=state.events.find(x=>String(x.id)===window.editingEventId);if(!e)return;
+ const team=$('editEventTeam').value,playerIndex=Number($('editEventPlayer').value),period=Number($('editEventPeriod').value),code=$('editEventCode').value;
+ if(!state[team]?.[playerIndex]||!allPeriods().includes(period)){alert('Q・選手を確認してください');return}
+ const def=statDefs.find(d=>d[0]===code);const label=def?def[1]:code==='FTM'?'FT IN ①':'FT OUT 1';
+ const points=def?def[2]:code==='FTM'?1:0;
+ // FTバッチを残すのはFT同士の訂正時のみ。通常項目への変更では一括取消の紐付けを解除。
+ if(e.ftBatch&&!['FTM','FTA'].includes(code)){delete e.ftBatch;delete e.ftShotNumber}
+ e.team=team;e.playerIndex=playerIndex;e.player=playerLabel(state[team][playerIndex]);e.period=period;e.code=code;e.label=label;e.points=points;
+ historyPeriod=period;saveAll();closeModal();refresh();
 }
 function undo(id){
  const i=state.events.findIndex(e=>String(e.id)===String(id));
@@ -754,12 +795,14 @@ function undo(id){
  if(event.ftBatch){const batch=String(event.ftBatch);state.events=state.events.filter(e=>String(e.ftBatch)!==batch)}
  else state.events.splice(i,1);
  saveAll();refresh();
- if(document.querySelector('.history-dialog'))openEventHistory();
+
  if($('report')?.classList.contains('active'))renderReport();
 }
 // 動的に描画し直される記録ボタンも確実に動作するようイベント委譲する。
 document.getElementById('modalRoot').addEventListener('click',function(e){const b=e.target.closest('.history-dialog .undo-event-btn');if(!b)return;e.preventDefault();e.stopPropagation();undo(b.getAttribute('data-event-id'));});
 document.getElementById('eventLog').addEventListener('click',function(e){
+ const edit=e.target.closest('.edit-event-btn');
+ if(edit&&this.contains(edit)){e.preventDefault();editEvent(edit.getAttribute('data-event-id'));return}
  const button=e.target.closest('.undo-event-btn');
  if(!button||!this.contains(button))return;
  e.preventDefault();e.stopPropagation();
@@ -884,7 +927,7 @@ function applyNewGame(){
  const keptHome=(Array.isArray(state.home)?state.home:[]).map(p=>({no:String(p.no??''),name:String(p.name??''),events:[]}));
  state={matchType:'',eventName:'',gameDate:'',gameTime:'',homeName:keptHomeName,awayName:'',home:keptHome,away:[],events:[],lineups:{home:[],away:[]},participationMarks:{home:{},away:{}}};
  for(let n=4;n<=18;n++)state.away.push({no:String(n),name:'',events:[]});
- currentPeriod=1;lineupWizard=null;selectedTeam='home';selectedPlayer=null;entryMode='event';pendingCode=null;swapTeam=null;swapOut=null;
+ currentPeriod=1;historyPeriod=1;lineupWizard=null;selectedTeam='home';selectedPlayer=null;entryMode='event';pendingCode=null;swapTeam=null;swapOut=null;
  // 先にDOMを初期化してから保存。saveAll はフォームから値を読み取るため順序が重要。
  for(const k of ['eventName','matchType','gameDate','gameTime','homeName','awayName']){
    const el=$(k);if(el)el.value=state[k]??'';
