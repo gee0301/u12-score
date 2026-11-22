@@ -475,7 +475,7 @@ input,select,textarea{max-width:100%;min-width:0;font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* Ver.46: iOS / Android responsive touch refinements */
+/* Ver.48: iOS / Android responsive touch refinements */
 html,body{max-width:100%;overflow-x:clip}
 button,input,select,textarea{font-family:inherit}
 button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -500,6 +500,12 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
  #record .center-commands .statgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
  #record .statbtn[data-code="FT"]{grid-column:3!important;grid-row:1/span 2!important}
 }
+/* Ver.48: player personal fouls and team fouls per period */
+.court-foul-count{display:inline-block;margin-left:7px;padding:2px 7px;border-radius:7px;background:#353f4d;border:1px solid #718199;color:#f9e2a4;font-size:.85em;white-space:nowrap}
+.court-foul-count.foul-five{background:#802d36;border-color:#e27a82;color:#fff}
+.period-team-fouls{margin:5px 0 9px;padding:7px 8px;border-radius:8px;background:#252d36;border:1px solid #5a687a;color:#fff0b0;font-size:clamp(12px,1.4vw,16px);font-weight:800;text-align:center}
+.period-team-fouls strong{font-size:1.25em;color:#ffe17c}
+@media(max-width:700px){.period-team-fouls{font-size:12px;padding:6px 3px}.court-foul-count{margin-left:3px;padding:1px 4px}}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -515,9 +521,9 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 <section id="record" class="page">
 <div class="card scorebar"><div><div id="homeLabel">自チーム</div><div class="score" id="homeScore">0</div></div><div><b id="periodLabel">1Q</b><div class="muted">試合スコア</div><select id="periodSelect" onchange="changeQuarter(this.value)"></select></div><div><div id="awayLabel">相手チーム</div><div class="score" id="awayScore">0</div></div></div>
 <div class="record-layout">
-<div class="card team-panel"><h2 id="homeCourtTitle">自チーム</h2><h3>出場中の5人</h3><div class="court-five" id="homeFive"></div><div class="toolbar" style="margin:9px 0"><button id="homeSwapButton" onclick="startSwap('home')">⇄ 交代</button><button onclick="openSub('home')">5人一括変更</button><button onclick="openAdd('home')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="homeBench"></div></div>
+<div class="card team-panel"><h2 id="homeCourtTitle">自チーム</h2><div id="homePeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="homeFive"></div><div class="toolbar" style="margin:9px 0"><button id="homeSwapButton" onclick="startSwap('home')">⇄ 交代</button><button onclick="openSub('home')">5人一括変更</button><button onclick="openAdd('home')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="homeBench"></div></div>
 <div class="card center-commands"><h2>記録コマンド</h2><div class="selected-banner" id="selectedBanner">中央のコマンドを選び、左右の選手をタップ</div><p class="muted" style="margin:10px 0">① 中央のコマンドを選択 → ② 左右の出場選手をタップ</p><div class="statgrid" id="commandStats"></div><p class="muted" id="commandHint">出場中の選手を選び、中央のコマンドを押してください。</p></div>
-<div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" onclick="startSwap('away')">⇄ 交代</button><button onclick="openSub('away')">5人一括変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="awayBench"></div></div>
+<div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" onclick="startSwap('away')">⇄ 交代</button><button onclick="openSub('away')">5人一括変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="awayBench"></div></div>
 </div>
 <div class="card recent-card"><div class="recent-heading"><h2>直近の記録（最新2件）</h2><button type="button" onclick="openEventHistory()">履歴を見る（全件）</button></div><div class="log" id="eventLog"></div><p class="muted">直近2件はここで取消できます。それ以前の記録は「履歴を見る」から確認・取消できます。</p></div>
 <div class="toolbar no-print"><button onclick="show('setup')">選手・設定を変更</button><button class="primary" onclick="show('report')">集計を見る</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div>
@@ -676,6 +682,10 @@ function allPeriods(){return Array.from({length:regulationPeriods()+3},(_,i)=>i+
 function populatePeriods(){['periodSelect','eventPeriod'].forEach(id=>{let el=$(id);if(el){el.innerHTML=allPeriods().map(p=>`<option value="${p}">${periodName(p)}</option>`).join('');el.value=currentPeriod}})}
 function teamLabel(t){return t==='home'?state.homeName:state.awayName}
 function playerLabel(p){return (p.no?'#'+p.no+' ':'')+(p.name||'未設定')}
+// ファウル数は履歴から毎回再集計。取消・Q変更・バックアップ復元にも追従する。
+function personalFoulCount(t,i){return state.events.filter(e=>e.team===t&&e.playerIndex===i&&e.code==='PF').length}
+function quarterTeamFoulCount(t,p){return state.events.filter(e=>e.team===t&&Number(e.period)===Number(p)&&e.code==='PF').length}
+
 function selectPlayer(i){selectedPlayer=i;refresh()}
 function statButton(code,label,points){return `<button class="statbtn" onclick="record('${code}')"><b>${label}</b><small>${points?('+'+points+'点'):'記録'}</small></button>`}
 function refresh(){
@@ -684,7 +694,8 @@ function refresh(){
  $('homeScore').textContent=sums.home;$('awayScore').textContent=sums.away;$('periodLabel').textContent=periodName(currentPeriod);
  for(const t of ['home','away']){
   $(t+'CourtTitle').textContent=teamLabel(t);let active=state.lineups[t];
-  $(t+'Five').innerHTML=active.map(i=>`<button class="player ${swapTeam===t&&swapOut===i?'active':selectedTeam===t&&selectedPlayer===i?'active':''}" onclick="pickCourt('${t}',${i})"><strong>${esc(playerLabel(state[t][i]))}</strong><small>${swapTeam===t?'交代で下がる選手を選択':'出場中'}</small></button>`).join('')+Array.from({length:Math.max(0,5-active.length)},()=>'<div class="player" style="border-style:dashed;text-align:center;color:#8794a5">未設定</div>').join('');
+  $(t+'PeriodFouls').innerHTML=esc(periodName(currentPeriod))+' チームF：<strong>'+quarterTeamFoulCount(t,currentPeriod)+'</strong>';
+  $(t+'Five').innerHTML=active.map(i=>`<button class="player ${swapTeam===t&&swapOut===i?'active':selectedTeam===t&&selectedPlayer===i?'active':''}" onclick="pickCourt('${t}',${i})"><strong>${esc(playerLabel(state[t][i]))}<span class="court-foul-count ${personalFoulCount(t,i)>=5?'foul-five':''}">F ${personalFoulCount(t,i)}</span></strong><small>${swapTeam===t?'交代で下がる選手を選択':'出場中'}</small></button>`).join('')+Array.from({length:Math.max(0,5-active.length)},()=>'<div class="player" style="border-style:dashed;text-align:center;color:#8794a5">未設定</div>').join('');
   $(t+'Bench').innerHTML=state[t].map((p,i)=>active.includes(i)?'':`<button ${swapTeam===t&&swapOut!==null?'class=sel':''} onclick="${swapTeam===t?`swapBench('${t}',${i})`:`startSwap('${t}')` }">${esc(playerLabel(p))}</button>`).join('')||'<span class="muted">控えなし</span>';
  }
  for(const t of ['home','away']){$(t+'SwapButton').classList.toggle('sel',swapTeam===t)}
