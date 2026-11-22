@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.51 iPad mini・iPhone・iPad オフラインHTML</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.54 iPad mini・iPhone・iPad オフラインHTML</title>
 <style>
 :root{--navy:#183153;--blue:#245ca6;--bg:#edf1f6;--line:#c8d1dc;--green:#e7f5eb;--red:#fff0ef}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182333;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
@@ -539,7 +539,7 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body.record-active .app-header{position:relative!important;top:auto!important}
 body.record-active #record>.scorebar{
  position:sticky!important;top:0!important;z-index:35!important;
- background:#fff!important;border:2px solid #a9b9ce!important;
+ background:#1d222a!important;border:2px solid #515b68!important;
  box-shadow:0 3px 12px rgba(15,33,58,.19)!important;
  margin-bottom:8px!important;
  padding:7px 9px!important;
@@ -579,6 +579,46 @@ body.record-active #record>.scorebar .muted{display:none}
 /* Notches/safe areas on tablets in landscape. */
 @media (orientation:landscape){body.record-active #record>.scorebar{padding-left:max(8px,env(safe-area-inset-left))!important;padding-right:max(8px,env(safe-area-inset-right))!important}}
 
+
+/* Ver.52: iPad screen-fitted record workspace. Score, controls and history
+   are simultaneously visible; each content region scrolls independently. */
+@media screen and (min-width:701px){
+ body.record-active{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ body.record-active>.app-header{flex:0 0 auto;position:relative!important;z-index:2}
+ body.record-active>main{flex:1 1 auto;min-height:0;width:100%;overflow:hidden;display:flex;flex-direction:column;padding:5px 8px max(5px,env(safe-area-inset-bottom))}
+ body.record-active #record.page.active{display:flex!important;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden;gap:5px}
+ body.record-active #record>.scorebar{position:relative!important;top:auto!important;flex:0 0 auto;margin:0!important;padding:4px 8px!important;box-shadow:none!important}
+ body.record-active #record .record-layout{flex:1 1 auto;min-height:0;overflow:hidden;align-items:stretch!important;margin:0!important}
+ body.record-active #record .record-layout>.card{min-height:0;min-width:0;overflow-y:auto;overscroll-behavior:contain;margin:0!important;-webkit-overflow-scrolling:touch}
+ body.record-active #record .center-commands{position:relative!important;top:auto!important}
+ body.record-active #record .recent-card{flex:0 0 clamp(140px,24dvh,250px);min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0!important;padding:5px 9px!important}
+ body.record-active #record .recent-card .recent-heading{flex:0 0 auto;margin:0!important}
+ body.record-active #record .recent-card>p.muted{display:none}
+ body.record-active #record .recent-card .log{flex:1 1 auto;min-height:0;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ body.record-active #record>.toolbar{display:none}
+ body.record-active #record .history-actions button{min-height:32px!important}
+}
+@media screen and (min-width:701px) and (orientation:landscape) and (max-height:850px){
+ body.record-active #record .recent-card{flex-basis:clamp(112px,21dvh,180px)}
+ body.record-active #record .center-commands .statbtn{min-height:42px!important;padding:3px 2px!important}
+ body.record-active #record .center-commands .statgrid{gap:4px!important}
+ body.record-active #record .team-panel .court-five .player{min-height:42px!important}
+ body.record-active #record #homeScore,body.record-active #record #awayScore{font-size:clamp(32px,5vw,54px)!important}
+}
+@media screen and (max-width:700px){
+ /* Phones retain natural page scrolling, with a pinned score for accessibility. */
+ body.record-active #record>.scorebar{position:sticky!important;top:0!important}
+}
+
+/* Ver.54: OUT/IN separate lists, clear confirmation and responsive modal */
+.multi-sub-dialog .sub-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.multi-sub-dialog .sub-two-cols section{min-width:0}
+.multi-sub-dialog .sub-two-cols h3{margin:6px 0;font-size:14px}
+.multi-sub-dialog .sub-choice-grid{max-height:38dvh}
+.multi-sub-dialog .sub-choice{background:#222831;color:#f0f2f6;border-color:#566477}
+.multi-sub-dialog .sub-choice small{color:#cbd5e1}
+.multi-sub-dialog .sub-confirm-bar{position:sticky;bottom:0;background:#17191d;padding:10px 0;z-index:2}
+@media(max-width:500px){.multi-sub-dialog .sub-two-cols{grid-template-columns:1fr}.multi-sub-dialog .sub-choice-grid{max-height:22dvh;grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -744,20 +784,61 @@ function nextQuarterLineup(){
 }
 function participationSlash(t,i,q){return state.participationMarks?.[t]?.[q]?.includes(i)?'/':''}
 function openSub(t){
- ensureLineups();const active=state.lineups[t]||[];
- openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} メンバー交代（複数人対応）</h2><p class="muted">現在の5人にチェックが入っています。下げる選手のチェックを外し、入れる控え選手にチェックを入れてください。1〜5人をまとめて交代できます。</p><div id="subSelectionStatus" class="sub-selection-status" aria-live="polite"></div><div class="sub-choice-grid">${state[t].map((p,i)=>`<label class="sub-choice ${active.includes(i)?'sub-original':''}"><input type="checkbox" class="subCheck" value="${i}" ${active.includes(i)?'checked':''} onchange="updateSubSelection('${t}')"><span>${esc(playerLabel(p))}</span><small>${active.includes(i)?'現在出場中':'控え'}</small></label>`).join('')}</div><div class="toolbar" style="margin-top:12px"><button class="primary" id="confirmSubButton" onclick="applySub('${t}')">交代を確定</button><button onclick="closeModal()">閉じる</button></div></div>`);
+ ensureLineups();
+ const active=state.lineups[t]||[];
+ if(active.length!==5){
+  return openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 交代準備</h2><p>現在の出場選手が${active.length}人です。先に5人を設定してください。</p><div class="toolbar"><button class="primary" onclick="closeModal();openLineupWizardForSub('${t}')">出場5人を設定</button><button onclick="closeModal()">閉じる</button></div></div>`);
+ }
+ const bench=state[t].map((p,i)=>i).filter(i=>!active.includes(i));
+ openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 複数人交代</h2><p class="muted">① 下げる選手を選ぶ → ② 入れる選手を同じ人数だけ選ぶ → ③ 確定。1〜5人を一括交代できます。</p>
+ <div class="sub-two-cols"><section><h3>① OUT（下げる選手）</h3><div class="sub-choice-grid">${active.map(i=>`<label class="sub-choice"><input type="checkbox" class="subOut" value="${i}" onchange="updateSubSelection('${t}')"><span>${esc(playerLabel(state[t][i]))}</span></label>`).join('')}</div></section>
+ <section><h3>② IN（入れる選手）</h3><div class="sub-choice-grid">${bench.length?bench.map(i=>`<label class="sub-choice"><input type="checkbox" class="subIn" value="${i}" onchange="updateSubSelection('${t}')"><span>${esc(playerLabel(state[t][i]))}</span></label>`).join(''):'<p class="muted">控え選手がいません。選手を追加してください。</p>'}</div></section></div>
+ <div id="subSelectionStatus" class="sub-selection-status" aria-live="polite"></div>
+ <div class="toolbar sub-confirm-bar"><button class="primary" id="confirmSubButton" onclick="applySub('${t}')">交代を確定</button><button onclick="closeModal()">キャンセル</button></div></div>`);
  updateSubSelection(t);
 }
-function updateSubSelection(t){
- const selected=[...document.querySelectorAll('.subCheck:checked')].map(x=>Number(x.value));
- const prev=state.lineups[t]||[];
- const outs=prev.filter(i=>!selected.includes(i));const ins=selected.filter(i=>!prev.includes(i));
- const status=$('subSelectionStatus');if(!status)return;
- status.textContent=`選択 ${selected.length}/5人　｜　交代 OUT ${outs.length}人 → IN ${ins.length}人`;
- status.classList.toggle('sub-invalid',selected.length!==5||outs.length!==ins.length);
- const confirm=$('confirmSubButton');if(confirm)confirm.disabled=selected.length!==5||outs.length!==ins.length||outs.length===0;
+function openLineupWizardForSub(t){
+ const active=state.lineups[t]||[];
+ openModal(`<h2>${esc(teamLabel(t))} 出場5人の設定</h2><p>出場させる5人を選択してください。</p><div class="sub-choice-grid">${state[t].map((p,i)=>`<label class="sub-choice"><input type="checkbox" class="subInitial" value="${i}" ${active.includes(i)?'checked':''} onchange="updateInitialSelection()"><span>${esc(playerLabel(p))}</span></label>`).join('')}</div><div id="initialSelectionStatus" class="sub-selection-status"></div><div class="toolbar"><button class="primary" onclick="applyInitialLineup('${t}')">5人を確定</button><button onclick="closeModal()">キャンセル</button></div>`);
+ updateInitialSelection();
 }
-function applySub(t){let arr=[...document.querySelectorAll('.subCheck:checked')].map(x=>+x.value);if(arr.length!==5)return alert('出場中の選手をちょうど5人選択してください（現在'+arr.length+'人）');let prev=state.lineups[t]||[];if(prev.length===5&&arr.every(i=>prev.includes(i)))return alert('交代する選手を選択してください');state.lineups[t]=arr;state.substitutions=state.substitutions||[];state.substitutions.push({team:t,period:currentPeriod,from:prev.filter(i=>!arr.includes(i)).map(i=>state[t][i].no),to:arr.filter(i=>!prev.includes(i)).map(i=>state[t][i].no),time:new Date().toLocaleTimeString('ja-JP')});selectedPlayer=null;markParticipation(t);saveAll();closeModal();refresh()}
+function updateInitialSelection(){
+ const n=document.querySelectorAll('.subInitial:checked').length;
+ const el=$('initialSelectionStatus');if(el){el.textContent=`${n}/5人を選択中${n===5?'（確定できます）':'（5人選択してください）'}`;el.classList.toggle('sub-invalid',n!==5)}
+}
+function applyInitialLineup(t){
+ const arr=[...document.querySelectorAll('.subInitial:checked')].map(x=>Number(x.value));
+ if(arr.length!==5)return alert('5人を選択してください');
+ state.lineups[t]=arr;markParticipation(t);saveAll();closeModal();refresh();
+}
+function subSelections(){
+ return {
+  outs:[...document.querySelectorAll('.subOut:checked')].map(x=>Number(x.value)),
+  ins:[...document.querySelectorAll('.subIn:checked')].map(x=>Number(x.value))
+ };
+}
+function updateSubSelection(t){
+ const {outs,ins}=subSelections();
+ const status=$('subSelectionStatus');if(!status)return;
+ const valid=outs.length>0&&outs.length===ins.length;
+ status.textContent=valid?`OUT ${outs.length}人 ／ IN ${ins.length}人　→　${outs.length}人の交代を確定できます`:`OUT ${outs.length}人 ／ IN ${ins.length}人　｜　下げる選手と入れる選手を同じ人数（1〜5人）選んでください`;
+ status.classList.toggle('sub-invalid',!valid);
+ const confirm=$('confirmSubButton');
+ if(confirm){confirm.disabled=false;confirm.textContent=valid?`${outs.length}人の交代を確定`:'交代を確定';}
+}
+function applySub(t){
+ const {outs,ins}=subSelections();
+ if(!outs.length||outs.length!==ins.length)return alert(`交代人数が一致していません。\nOUT：${outs.length}人　IN：${ins.length}人\n両方を同じ人数にしてください。`);
+ ensureLineups();
+ const prev=[...state.lineups[t]];
+ if(prev.length!==5)return alert('出場中の5人を先に設定してください');
+ if(outs.some(i=>!prev.includes(i))||ins.some(i=>prev.includes(i))||new Set([...prev.filter(i=>!outs.includes(i)),...ins]).size!==5)return alert('交代する選手を再選択してください');
+ state.lineups[t]=[...prev.filter(i=>!outs.includes(i)),...ins];
+ state.substitutions=state.substitutions||[];
+ state.substitutions.push({team:t,period:currentPeriod,from:outs.map(i=>state[t][i].no),to:ins.map(i=>state[t][i].no),time:new Date().toLocaleTimeString('ja-JP')});
+ selectedPlayer=null;swapTeam=null;swapOut=null;
+ markParticipation(t);saveAll();closeModal();refresh();
+}
 function startSwap(t){if(swapTeam===t){cancelSwap();return}ensureLineups();if(state.lineups[t].length!==5){alert('まず「5人一括変更」で出場中の5人を設定してください');return}swapTeam=t;swapOut=null;pendingCode=null;refresh()}
 function cancelSwap(){swapTeam=null;swapOut=null;refresh()}
 function swapBench(t,i){if(swapTeam!==t||swapOut===null)return;let lineup=state.lineups[t];if(lineup.includes(i))return;let pos=lineup.indexOf(swapOut);if(pos<0){cancelSwap();return}let outgoing=state[t][swapOut],incoming=state[t][i];lineup[pos]=i;state.substitutions=state.substitutions||[];state.substitutions.push({team:t,period:currentPeriod,from:[outgoing.no],to:[incoming.no],time:new Date().toLocaleTimeString('ja-JP')});selectedTeam=t;selectedPlayer=null;swapTeam=null;swapOut=null;markParticipation(t);saveAll();refresh()}
