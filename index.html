@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.47 iPad mini・iPhone・iPad オフラインHTML</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.51 iPad mini・iPhone・iPad オフラインHTML</title>
 <style>
 :root{--navy:#183153;--blue:#245ca6;--bg:#edf1f6;--line:#c8d1dc;--green:#e7f5eb;--red:#fff0ef}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182333;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
@@ -533,6 +533,52 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .multi-sub-dialog .sub-choice small{font-size:10px;color:#667;white-space:nowrap}
 .multi-sub-dialog .sub-choice.sub-original{border-color:#6383b1}
 @media(max-width:480px){.multi-sub-dialog .sub-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.multi-sub-dialog .sub-choice{flex-wrap:wrap}.multi-sub-dialog .sub-choice small{width:100%;padding-left:25px}}
+
+/* Ver.51: iPad portrait/landscape -- scores remain visible while recording.
+   No scoring, substitution, history or report logic is changed. */
+body.record-active .app-header{position:relative!important;top:auto!important}
+body.record-active #record>.scorebar{
+ position:sticky!important;top:0!important;z-index:35!important;
+ background:#fff!important;border:2px solid #a9b9ce!important;
+ box-shadow:0 3px 12px rgba(15,33,58,.19)!important;
+ margin-bottom:8px!important;
+ padding:7px 9px!important;
+}
+body.record-active #record>.scorebar>div{min-width:0}
+body.record-active #record #periodSelect{min-height:38px!important;margin-top:2px!important;padding:5px!important}
+body.record-active #record>.scorebar .muted{display:none}
+/* iPad portrait: keep 3 columns and shrink the oversized score display. */
+@media (orientation:portrait) and (min-width:701px) and (max-width:1100px){
+ #record>.scorebar{grid-template-columns:minmax(0,1fr) minmax(100px,.55fr) minmax(0,1fr)!important;gap:6px!important}
+ #record #homeLabel,#record #awayLabel{font-size:clamp(15px,2.3vw,23px)!important;line-height:1.1!important}
+ #record #homeScore,#record #awayScore{font-size:clamp(43px,6.2vw,67px)!important;line-height:1!important}
+ #record #periodLabel{font-size:clamp(26px,3.7vw,38px)!important;line-height:1!important}
+ #record .record-layout{grid-template-columns:minmax(0,1fr) minmax(245px,1.15fr) minmax(0,1fr)!important;gap:6px!important}
+ #record .team-panel,#record .center-commands{padding:7px!important}
+ #record .court-five .player{min-height:52px!important;padding:5px 3px!important}
+ #record .court-five .player strong{font-size:clamp(12px,1.55vw,16px)!important}
+ #record .center-commands .statgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+ #record .center-commands .statbtn{min-height:54px!important;padding:5px 2px!important}
+ #record .center-commands .statbtn b{font-size:clamp(11px,1.4vw,14px)!important}
+ #record .statbtn[data-code="FT"]{min-height:112px!important}
+ #record .team-panel .toolbar button{font-size:11px!important;min-height:42px!important}
+}
+/* iPad landscape: keep the 3-column workflow and a low-profile scoreboard. */
+@media (orientation:landscape) and (min-width:701px){
+ #record #homeScore,#record #awayScore{font-size:clamp(38px,5vw,65px)!important}
+ #record #periodLabel{font-size:clamp(25px,3vw,40px)!important}
+ #record #homeLabel,#record #awayLabel{font-size:clamp(14px,1.8vw,23px)!important}
+}
+/* Phone portrait: commands first, score remains pinned during player selection. */
+@media (orientation:portrait) and (max-width:700px){
+ body.record-active #record>.scorebar{padding:5px 4px!important;gap:3px!important}
+ #record #homeScore,#record #awayScore{font-size:clamp(32px,9vw,48px)!important}
+ #record #periodLabel{font-size:clamp(23px,6vw,34px)!important}
+ #record #homeLabel,#record #awayLabel{font-size:clamp(12px,3vw,17px)!important}
+}
+/* Notches/safe areas on tablets in landscape. */
+@media (orientation:landscape){body.record-active #record>.scorebar{padding-left:max(8px,env(safe-area-inset-left))!important;padding-right:max(8px,env(safe-area-inset-right))!important}}
+
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -597,7 +643,7 @@ let historyPeriod=1;
 let currentPeriod=1,selectedTeam='home',selectedPlayer=null,entryMode='event',pendingCode=null,swapTeam=null,swapOut=null;
 const statDefs=[['2PM','2点IN ②',2],['2PA','2点OUT 2',0],['FT','FT（本数指定）',0],['3PM','3点IN ③',3],['3PA','3点OUT 3',0],['OREB','OR',0],['DREB','DR',0],['PF','F ファール',0],['BLK','ブロック',0],['AST','Ass A',0],['STL','Stel',0],['TO_DRIBBLE','TO ドリブルミス D',0],['TO_PASS','TO パスミス P',0],['TO_TRAVEL','TO トラベリング T',0]];
 function $(id){return document.getElementById(id)}
-function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');refresh();if(id==='report')renderReport()}
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('record-active',id==='record');refresh();if(id==='report')renderReport()}
 function addPlayer(team){state[team].push({no:'',name:'',events:[]});renderRosters();saveAll();refresh()}
 function orderedIndices(t){return state[t].map((p,i)=>i).sort((a,b)=>Number(state[t][a].no)-Number(state[t][b].no))}
 function renderRosters(){['home','away'].forEach(t=>{let box=$(t+'Roster');box.innerHTML='';orderedIndices(t).forEach(i=>{let p=state[t][i];let d=document.createElement('div');d.className='grid';d.style.margin='5px 0';d.innerHTML=`<input placeholder="背番号" value="${esc(p.no)}" onchange="state.${t}[${i}].no=this.value;saveAll()"><input placeholder="選手名" value="${esc(p.name)}" onchange="state.${t}[${i}].name=this.value;saveAll()">`;box.appendChild(d)})})}

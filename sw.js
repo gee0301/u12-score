@@ -1,4 +1,4 @@
-const CACHE_NAME = 'u12-stats-v50-20261122';
+const CACHE_NAME = 'u12-stats-v51-20261122';
 const APP_SHELL = ['./index.html', './'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
