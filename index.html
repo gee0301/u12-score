@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.57 iPad mini・iPhone・iPad オフラインHTML</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.58 iPad mini・iPhone・iPad オフラインHTML</title>
 <style>
 :root{--navy:#183153;--blue:#245ca6;--bg:#edf1f6;--line:#c8d1dc;--green:#e7f5eb;--red:#fff0ef}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182333;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
@@ -696,12 +696,23 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
  body.record-active #record .center-commands .statbtn b{font-size:10px!important}
  body.record-active #record .recent-card{flex-basis:80px!important}
 }
-/* Ver.57: home roster selection and away keypad by quarter */
+/* Ver.58: home roster selection and away keypad by quarter */
 .quarter-home-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:48dvh;overflow-y:auto;overscroll-behavior:contain;margin:10px 0}
 .quarter-home-option{display:flex;align-items:center;gap:8px;min-width:0;padding:10px;background:#253344;color:#fff;border:1px solid #52647a;border-radius:8px;cursor:pointer;font-size:14px}
 .quarter-home-option input{width:22px;height:22px;flex-shrink:0;accent-color:#f1c45c}
 .quarter-home-option span{overflow-wrap:anywhere}
 @media(max-height:520px){.quarter-home-list{max-height:28dvh}.quarter-home-option{padding:5px}}
+
+/* Ver.58: small in-app number pad, no native keyboard */
+.small-add-dialog{max-width:350px;margin:auto;text-align:center}
+.small-add-dialog h2{font-size:19px}
+.small-add-number{font-size:30px;font-weight:800;background:#283342;color:#ffe27d;border:1px solid #66768a;border-radius:9px;padding:8px;margin:8px 0}
+.small-add-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;max-width:240px;margin:8px auto}
+.small-add-keys button{min-height:37px;padding:4px;font-size:17px;background:#303a49;color:white}
+.roster-method-options{display:grid;gap:10px;margin:15px 0}
+.roster-method-options label{display:flex;gap:10px;align-items:center;background:#303947;padding:12px;border-radius:9px}
+.roster-method-options input{width:20px;min-height:20px;margin:0}
+@media(max-height:520px){.small-add-keys button{min-height:29px}.small-add-number{font-size:23px;padding:3px}}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -709,9 +720,9 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 <label>大会名<input id="eventName" placeholder="大会名を入力"></label><label>試合内容<select id="matchType"><option value="">選択してください</option><option value="練習試合">練習試合</option><option value="春季大会">春季大会</option><option value="夏季大会">夏季大会</option><option value="秋季大会">秋季大会</option><option value="冬季大会">冬季大会</option><option value="フレッシュ">フレッシュ</option></select></label><div class="date-time-pair"><label>試合日<input id="gameDate" type="date"></label><label>試合開始予定時刻（10分単位）<input id="gameTime" type="time" step="600"></label></div>
 <div class="team-name-pair"><label>自チーム名<input id="homeName" value="自チーム"></label><label>相手チーム名<input id="awayName" value="相手チーム"></label></div>
 </div><p class="muted">基本は4Q制・3ポイントあり。延長戦は必要になった場合にOT1〜OT3を試合スコア下から選べます。</p></div>
-<div class="grid">
-<div class="card"><h2 id="homeRosterTitle">自チーム 選手登録</h2><div class="toolbar"><button onclick="openBulk('home')">メモから一括貼付</button><button onclick="openAdd('home')">＋ 選手追加</button></div><div id="homeRoster"></div></div>
-<div class="card"><h2 id="awayRosterTitle">相手チーム 選手登録</h2><div class="toolbar"><button onclick="openBulk('away')">メモから一括貼付</button><button onclick="openAdd('away')">＋ 選手追加</button></div><div id="awayRoster"></div></div>
+<div class="toolbar"><button class="primary" onclick="openRosterMethodSetup()">選手登録方法を選択</button></div><div class="grid">
+<div class="card"><h2 id="homeRosterTitle">自チーム 選手登録</h2><div class="toolbar"><button onclick="openBulk('home')">メモから一括貼付</button><button onclick="openAdd('home')">＋ テンキーで追加</button></div><div id="homeRoster"></div></div>
+<div class="card"><h2 id="awayRosterTitle">相手チーム 選手登録</h2><div class="toolbar"><button onclick="openBulk('away')">メモから一括貼付</button><button onclick="openAdd('away')">＋ テンキーで追加</button></div><div id="awayRoster"></div></div>
 </div><div class="toolbar"><button class="primary" onclick="saveAll();show('record')">設定を保存して記録へ</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div><p id="newGameNotice" class="muted" role="status"></p>
 </section>
 <section id="record" class="page">
@@ -757,7 +768,7 @@ function nextSetupWizard(){
  if(setupWizardStep===2){if(!$('wizDate').value){alert('試合日を確認してください');return}state.gameDate=$('wizDate').value;$('gameDate').value=state.gameDate}
  if(setupWizardStep===3){if(!$('wizTime').value){alert('試合開始予定時刻を確認してください');return}state.gameTime=$('wizTime').value;$('gameTime').value=state.gameTime}
  if(setupWizardStep<3){setupWizardStep++;renderSetupWizard();return}
- $('setupWizardRoot').replaceChildren();saveAll();show('setup');
+ $('setupWizardRoot').replaceChildren();saveAll();show('setup');openRosterMethodSetup();
 }
 
 let state={matchType:'',eventName:'',gameDate:'',gameTime:'',homeName:'自チーム',awayName:'相手チーム',home:[],away:[],events:[]};
@@ -779,8 +790,37 @@ function setMode(m){entryMode='event';pendingCode=null;refresh()}
 function roundedTimeLocal(){const d=new Date();d.setMinutes(Math.ceil(d.getMinutes()/10)*10,0,0);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function todayLocal(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function seedRoster(){for(const t of ['home','away'])if(!Array.isArray(state[t]))state[t]=[];}
+let rosterMethods={home:'bulk',away:'quarter'};
+let rosterSetupSide='home';
+function openRosterMethodSetup(side='home'){
+ rosterSetupSide=side;
+ const root=$('setupWizardRoot');
+ const method=rosterMethods[side]||'quarter';
+ root.innerHTML=`<div class="wizard-shade"><div class="wizard-box roster-method-wizard" role="dialog" aria-modal="true"><div class="wizard-step">選手登録方法：${side==='home'?'自チーム':'相手チーム'}</div><h2>${side==='home'?'自チーム':'相手チーム'}の選手登録</h2><p>登録方法を選択してください。試合設定から後で変更できます。</p><div class="roster-method-options">
+ <label><input type="radio" name="rosterMethod" value="bulk" ${method==='bulk'?'checked':''}> ① メモから一括貼り付け</label>
+ <label><input type="radio" name="rosterMethod" value="default" ${method==='default'?'checked':''}> ② 背番号4〜18を登録（名前空欄）</label>
+ <label><input type="radio" name="rosterMethod" value="quarter" ${method==='quarter'?'checked':''}> ③ Qごとに選手を追加</label></div>
+ <div class="toolbar"><button class="primary" onclick="confirmRosterMethod()">${side==='home'?'次へ（相手チーム）':'登録方法を確定'}</button><button onclick="closeRosterMethodSetup()">あとで設定</button></div></div></div>`;
+}
+function closeRosterMethodSetup(){$('setupWizardRoot').replaceChildren();show('setup')}
+function confirmRosterMethod(){
+ const method=document.querySelector('input[name="rosterMethod"]:checked')?.value||'quarter';
+ const side=rosterSetupSide;rosterMethods[side]=method;
+ if(method==='default'){
+  for(let n=4;n<=18;n++)if(!state[side].some(p=>String(Number(p.no))===String(n)))state[side].push({no:String(n),name:'',events:[]});
+ }
+ renderRosters();saveAll();
+ if(side==='home'){openRosterMethodSetup('away');return}
+ $('setupWizardRoot').replaceChildren();show('setup');openRosterMethodAction('home');
+}
+function openRosterMethodAction(side){
+ const method=rosterMethods[side]||'quarter';
+ if(method==='bulk'){openBulk(side);return}
+ if(method==='quarter'){openSmallKeypadAdd(side);return}
+ if(side==='home'&&rosterMethods.away==='bulk')openBulk('away');
+}
 function openStartup(){
- openModal(`<div class="startup-dialog"><h2>試合設定・選手登録</h2><p class="muted">自チームは名簿を貼り付け、Qごとにその名簿から5人を選択します。相手チームは名簿不要で、各Qの開始時にテンキーで5人の背番号を入力します。初登場の番号は名前空欄で登録され、以降も引き継がれます。</p><div class="startup-grid"><label>自チーム名・選手名簿（貼り付け）<textarea id="startHomeBulk" spellcheck="false" placeholder="SUNRISE\n4 山田\n5 田中\n6 佐藤\n7 鈴木\n8 中村"></textarea></label><label>相手チーム名（任意）<input id="startAwayName" placeholder="相手チーム" value="${esc(state.awayName==='相手チーム'?'':state.awayName)}"><p class="muted">相手チームの選手は、Q開始時のテンキーで追加します。名簿の貼り付けは不要です。</p></label></div><div class="toolbar" style="margin-top:12px"><button class="primary" onclick="confirmStartup()">設定を確定して1Qの5人を選択</button><button onclick="closeModal();show('setup')">詳細設定を開く</button></div></div>`);
+ openModal(`<h2>試合開始・出場選手設定</h2><p>自チームと相手チームの登録選手を確認してください。名簿追加・背番号追加は試合設定からもできます。</p><div class="startup-grid"><label>自チーム名<input id="startHomeName" value="${esc(state.homeName)}"></label><label>相手チーム名<input id="startAwayName" value="${esc(state.awayName)}"></label></div><div class="toolbar"><button class="primary" onclick="confirmStartup()">1Qの出場5人を選択</button><button onclick="closeModal();show('setup');openRosterMethodSetup()">登録方法を変更</button><button onclick="closeModal();show('setup')">試合設定へ</button></div>`);
 }
 function normalizeRosterText(raw){return String(raw||'').normalize('NFKC').replace(/\u3000/g,' ').replace(/\r\n?/g,'\n').replace(/[\u200B-\u200D\uFEFF]/g,'')}
 function parseStartupRoster(raw,defaultName){
@@ -794,20 +834,10 @@ function parseStartupRoster(raw,defaultName){
  return {name,players:[...unique.values()]};
 }
 function confirmStartup(){
- const raw=$('startHomeBulk').value.trim();
- const h=raw?parseStartupRoster(raw,state.homeName||'自チーム'): {name:state.homeName||'自チーム',players:state.home.filter(p=>String(p.no||'').trim()&&String(p.name||'').trim())};
- if(h.players.length<5){alert('自チームの名簿から5人以上を登録してください。名簿を貼り付けるか、試合設定から選手を追加してください。');return}
- const hasEvents=Array.isArray(state.events)&&state.events.length>0;
- state.homeName=h.name; $('homeName').value=h.name;
- if(raw){
-  if(hasEvents){for(const p of h.players){const old=state.home.find(x=>String(x.no)===p.no);if(old){if(p.name)old.name=p.name}else state.home.push(p)}}
-  else state.home=h.players;
- }
- const awayName=$('startAwayName').value.trim()||'相手チーム';state.awayName=awayName;$('awayName').value=awayName;
- // 新規試合では相手チームの選手を事前生成しない。各Qの入力で増やす。
- if(!hasEvents){state.away=[];state.lineups={home:[],away:[]};state.participationMarks={home:{},away:{}};state.periodLineups={}}
- state.gameDate=$('gameDate').value||state.gameDate||todayLocal();$('gameDate').value=state.gameDate;
- state.gameTime=$('gameTime').value||state.gameTime||roundedTimeLocal();$('gameTime').value=state.gameTime;
+ const homeName=$('startHomeName')?.value.trim()||'自チーム';
+ const awayName=$('startAwayName')?.value.trim()||'相手チーム';
+ state.homeName=homeName;state.awayName=awayName;$('homeName').value=homeName;$('awayName').value=awayName;
+ if(!state.events.length){state.lineups={home:[],away:[]};state.participationMarks={home:{},away:{}};state.periodLineups={}}
  ensureLineups();renderRosters();saveAll();closeModal();show('record');beginQuarterLineup(1,true);
 }
 function ensureLineups(){if(!state.lineups)state.lineups={home:[],away:[]};for(const t of ['home','away']){let old=state.lineups[t]||[];state.lineups[t]=[...new Set(old.filter(i=>Number.isInteger(i)&&i>=0&&i<state[t].length))].slice(0,5)}}
@@ -815,7 +845,15 @@ function openModal(html){$('modalRoot').innerHTML='<div class="modal-shade" oncl
 function closeModal(){$('modalRoot').innerHTML=''}
 function openBulk(t){openModal(`<h2>${esc(teamLabel(t))} 一括登録</h2><p class="muted">チーム名は省略可。数字で始まる行は必ず選手として認識し、先頭の数字以降を名前として登録します（例：4あき、４　あき）。既存の選手と記録は残し、重複背番号は追加しません。</p><textarea id="bulkText" placeholder="SUNRISE\n4 山田\n5 田中\n6 佐藤"></textarea><div class="toolbar" style="margin-top:10px"><button class="primary" onclick="importBulk('${t}')">取り込む</button><button onclick="closeModal()">閉じる</button></div>`)}
 function importBulk(t){let lines=normalizeRosterText($('bulkText').value).split('\n').map(x=>x.trim()).filter(Boolean);if(!lines.length)return alert('貼り付けてください');let first=lines[0];if(!/^\d/.test(first)){state[t+'Name']=first;$(t+'Name').value=first;lines.shift()}let count=0,updated=0;for(const line of lines){let m=line.match(/^(\d+)(.*)$/);if(!m)continue;let no=String(Number(m[1])),name=m[2].replace(/^[\s,，、]+/,'').trim();let existing=state[t].find(p=>String(p.no).trim()===no);if(existing){if(name){existing.name=name;updated++}continue}state[t].push({no,name,events:[]});count++}ensureLineups();renderRosters();saveAll();closeModal();refresh();alert('新規登録：'+count+'件\n既存選手の名前更新：'+updated+'件\n合計反映：'+(count+updated)+'件')}
-function openAdd(t){openModal(`<h2>${esc(teamLabel(t))} 選手・背番号の追加</h2><p class="muted">初期登録の4〜18番以外も、任意の背番号で追加できます。既にある背番号は重複登録できません。</p><label>追加する背番号（必須）<input id="newNo" type="number" min="0" step="1" inputmode="numeric" placeholder="例：19" autocomplete="off"></label><label style="margin-top:12px">選手名（任意）<input id="newName" placeholder="例：山田" autocomplete="off"></label><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="submitAdd('${t}',true)">追加して続ける</button><button onclick="submitAdd('${t}',false)">追加して閉じる</button><button onclick="closeModal()">キャンセル</button></div>`)}
+function openAdd(t){openSmallKeypadAdd(t);return;openModal(`<h2>${esc(teamLabel(t))} 選手・背番号の追加</h2><p class="muted">初期登録の4〜18番以外も、任意の背番号で追加できます。既にある背番号は重複登録できません。</p><label>追加する背番号（必須）<input id="newNo" type="number" min="0" step="1" inputmode="numeric" placeholder="例：19" autocomplete="off"></label><label style="margin-top:12px">選手名（任意）<input id="newName" placeholder="例：山田" autocomplete="off"></label><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="submitAdd('${t}',true)">追加して続ける</button><button onclick="submitAdd('${t}',false)">追加して閉じる</button><button onclick="closeModal()">キャンセル</button></div>`)}
+let addKeypadDigits='';
+function openSmallKeypadAdd(t){addKeypadDigits='';renderSmallKeypadAdd(t)}
+function renderSmallKeypadAdd(t){
+ const nums=state[t].filter(p=>String(p.no).trim()).length;
+ openModal(`<div class="small-add-dialog"><h2>${esc(teamLabel(t))} 背番号を追加</h2><p class="muted">数字を押して「追加」。続けて何人でも登録できます。名前は試合設定の選手一覧で編集してください。</p><div class="small-add-number" id="smallAddNumber">${esc(addKeypadDigits||'—')}</div><div class="small-add-keys">${['1','2','3','4','5','6','7','8','9','消去','0','←'].map(k=>`<button type="button" onclick="pressSmallAddKey('${t}','${k}')">${k}</button>`).join('')}</div><div id="smallAddStatus" class="muted">現在の登録人数：${nums}人</div><div class="toolbar"><button class="primary" onclick="commitSmallAdd('${t}')">＋ 1人追加</button><button onclick="closeModal()">完了</button></div></div>`);
+}
+function pressSmallAddKey(t,key){if(key==='消去')addKeypadDigits='';else if(key==='←')addKeypadDigits=addKeypadDigits.slice(0,-1);else if(addKeypadDigits.length<3)addKeypadDigits+=key;const el=$('smallAddNumber');if(el)el.textContent=addKeypadDigits||'—'}
+function commitSmallAdd(t){if(!/^\d{1,3}$/.test(addKeypadDigits))return alert('背番号を入力してください');const no=String(Number(addKeypadDigits));if(state[t].some(p=>String(Number(p.no))===no)){const el=$('smallAddStatus');if(el)el.textContent=`#${no} は登録済みです。別の番号を入力してください。`;addKeypadDigits='';$('smallAddNumber').textContent='—';return}state[t].push({no,name:'',events:[]});renderRosters();saveAll();refresh();renderSmallKeypadAdd(t);$('smallAddStatus').textContent=`#${no} を追加しました。現在${state[t].length}人登録。次の番号を入力できます。`}
 function submitAdd(t,keepOpen=false){let no=$('newNo').value.trim(),name=$('newName').value.trim();if(!/^\d+$/.test(no))return alert('背番号を数字で入力してください');no=String(Number(no));if(state[t].some(p=>String(p.no).trim()===no))return alert('背番号 '+no+' は既に登録済みです。既存の選手欄で名前を編集できます。');state[t].push({no,name,events:[]});renderRosters();saveAll();refresh();if(keepOpen){$('newNo').value='';$('newName').value='';$('newNo').focus()}else closeModal()}
 function markParticipation(t,period=currentPeriod){
  if(period<1||period>4)return;
@@ -843,7 +881,7 @@ function cancelQuarterLineup(){
  closeModal();refresh();
  if(wasStart)openStartup();
 }
-// Ver.57: HOME is selected from pasted roster; AWAY is entered on keypad each Q.
+// Ver.58: HOME is selected from pasted roster; AWAY is entered on keypad each Q.
 let quarterKeypadSlot=0;
 function quarterNumbers(t){
  const w=lineupWizard;if(!w)return [];
@@ -853,8 +891,8 @@ function quarterNumbers(t){
 }
 function showQuarterLineupStep(){
  const w=lineupWizard;if(!w)return;
- if(w.step===0){showHomeQuarterSelection();return}
- showAwayQuarterKeypad();
+ if(w.step===0){if(rosterMethods.home==='quarter'||state.home.filter(p=>String(p.no).trim()).length<5)showQuarterKeypadFor('home');else showHomeQuarterSelection();return}
+ if(rosterMethods.away==='quarter'||state.away.filter(p=>String(p.no).trim()).length<5)showQuarterKeypadFor('away');else showRosterQuarterSelection('away');
 }
 function showHomeQuarterSelection(){
  const w=lineupWizard;if(!w)return;
@@ -875,28 +913,35 @@ function updateHomeQuarterStatus(){
  el.textContent=`${n} / 5人を選択中${n===5?'（次へ進めます）':'（5人選んでください）'}`;
  el.classList.toggle('invalid',n!==5);
 }
-function showAwayQuarterKeypad(){
+function showQuarterKeypadFor(t){
  const w=lineupWizard;if(!w)return;
- w.numbers=w.numbers||{};w.numbers.away=quarterNumbers('away');
+ w.numbers=w.numbers||{};w.numbers[t]=quarterNumbers(t);
  quarterKeypadSlot=Math.min(quarterKeypadSlot,4);
- const nums=w.numbers.away;
+ const nums=w.numbers[t];
  const slots=nums.map((n,i)=>`<button type="button" class="quarter-number-slot ${i===quarterKeypadSlot?'keypad-active':''}" onclick="selectQuarterSlot(${i})"><small>${i+1}人目</small><strong>${esc(n||'—')}</strong></button>`).join('');
  const keys=['1','2','3','4','5','6','7','8','9','消去','0','次へ'];
- openModal(`<div class="quarter-keypad-dialog"><h2>${esc(periodName(w.target))} 相手チームの出場5人</h2><p class="muted">背番号をテンキーで入力してください。新しい番号は名前空欄で登録されます。前のQに出場した番号も再利用できます。2桁の番号は続けて押し、「次へ」で入力欄を移動します。</p><div class="quarter-number-slots">${slots}</div><div class="quarter-keypad">${keys.map(k=>`<button type="button" class="${k==='消去'?'keypad-delete':''}" onclick="quarterKeyPress('${k}')">${k}</button>`).join('')}</div><div id="quarterNumberStatus" class="quarter-number-status" aria-live="polite"></div><div class="toolbar quarter-keypad-actions"><button onclick="backToHomeQuarter()">← 自チーム選択へ戻る</button><button class="primary" onclick="nextQuarterLineup()">両チームを確定して${esc(periodName(w.target))}へ</button><button onclick="cancelQuarterLineup()">キャンセル</button></div></div>`);
+ openModal(`<div class="quarter-keypad-dialog"><h2>${esc(periodName(w.target))} ${t==='home'?'自チーム':'相手チーム'}の出場5人</h2><p class="muted">背番号をテンキーで入力してください。新しい番号は名前空欄で登録されます。前のQに出場した番号も再利用できます。2桁の番号は続けて押し、「次へ」で入力欄を移動します。</p><div class="quarter-number-slots">${slots}</div><div class="quarter-keypad">${keys.map(k=>`<button type="button" class="${k==='消去'?'keypad-delete':''}" onclick="quarterKeyPress('${k}')">${k}</button>`).join('')}</div><div id="quarterNumberStatus" class="quarter-number-status" aria-live="polite"></div><div class="toolbar quarter-keypad-actions"><button onclick="backToHomeQuarter()">← 自チーム選択へ戻る</button><button class="primary" onclick="nextQuarterLineup()">両チームを確定して${esc(periodName(w.target))}へ</button><button onclick="cancelQuarterLineup()">キャンセル</button></div></div>`);
  updateQuarterNumberStatus();
 }
+function showRosterQuarterSelection(t){
+ const w=lineupWizard;const prev=w.awaySelection||[...(state.lineups.away||[])];w.awaySelection=prev;
+ const choices=state[t].map((p,i)=>({p,i})).filter(({p})=>String(p.no||'').trim()).map(({p,i})=>`<label class="quarter-home-option"><input type="checkbox" value="${i}" ${prev.includes(i)?'checked':''} onchange="updateAwayQuarterSelection()"><span>${esc(playerLabel(p))}</span></label>`).join('');
+ openModal(`<div class="quarter-home-dialog"><h2>${esc(periodName(w.target))} 相手チームの出場5人</h2><p>登録済み名簿から5人を選んでください。</p><div class="quarter-away-list quarter-home-list">${choices}</div><div id="quarterAwayStatus" class="quarter-number-status"></div><div class="toolbar"><button onclick="backToHomeQuarter()">戻る</button><button class="primary" onclick="nextQuarterLineup()">確定して${esc(periodName(w.target))}へ</button><button onclick="cancelQuarterLineup()">キャンセル</button></div></div>`);updateAwayQuarterStatus();
+}
+function updateAwayQuarterSelection(){lineupWizard.awaySelection=[...document.querySelectorAll('.quarter-away-list input:checked')].map(x=>Number(x.value));updateAwayQuarterStatus()}
+function updateAwayQuarterStatus(){const n=lineupWizard.awaySelection.length;const el=$('quarterAwayStatus');if(el){el.textContent=`${n}/5人選択`;el.classList.toggle('invalid',n!==5)}}
 function backToHomeQuarter(){if(!lineupWizard)return;lineupWizard.step=0;showQuarterLineupStep()}
-function selectQuarterSlot(i){quarterKeypadSlot=i;showAwayQuarterKeypad()}
+function selectQuarterSlot(i){quarterKeypadSlot=i;showQuarterLineupStep()}
 function quarterKeyPress(key){
  const w=lineupWizard;if(!w||w.step!==1)return;
- const nums=w.numbers.away;
- if(key==='次へ'){quarterKeypadSlot=(quarterKeypadSlot+1)%5;showAwayQuarterKeypad();return}
- if(key==='消去'){nums[quarterKeypadSlot]='';showAwayQuarterKeypad();return}
+ const t=w.step===0?'home':'away';const nums=w.numbers[t];
+ if(key==='次へ'){quarterKeypadSlot=(quarterKeypadSlot+1)%5;showQuarterLineupStep();return}
+ if(key==='消去'){nums[quarterKeypadSlot]='';showQuarterLineupStep();return}
  if(!/^\d$/.test(key))return;
  const next=(nums[quarterKeypadSlot]||'')+key;
  if(next.length>3)return;
  nums[quarterKeypadSlot]=String(Number(next));
- showAwayQuarterKeypad();
+ showQuarterLineupStep();
 }
 function validateQuarterNumbers(nums){
  if(nums.length!==5||nums.some(n=>!/^\d+$/.test(n)))return '5人全員の背番号を入力してください。';
@@ -905,31 +950,30 @@ function validateQuarterNumbers(nums){
 }
 function updateQuarterNumberStatus(){
  const w=lineupWizard;if(!w)return;
- const msg=validateQuarterNumbers(w.numbers.away);
+ const msg=validateQuarterNumbers(w.numbers[w.step===0?'home':'away']);
  const el=$('quarterNumberStatus');if(el){el.textContent=msg||'5人の背番号が揃いました。確定できます。';el.classList.toggle('invalid',!!msg)}
+}
+function quarterSelectedIndices(t){
+ const w=lineupWizard;const usingKeypad=rosterMethods[t]==='quarter'||state[t].filter(p=>String(p.no).trim()).length<5;
+ if(!usingKeypad)return t==='home'?w.homeSelection:w.awaySelection;
+ const nums=w.numbers[t]||[];const err=validateQuarterNumbers(nums);if(err){alert(err);return null}
+ return nums.map(raw=>{const no=String(Number(raw));let idx=state[t].findIndex(p=>String(Number(p.no))===no);if(idx<0){idx=state[t].length;state[t].push({no,name:'',events:[]})}return idx});
 }
 function nextQuarterLineup(){
  const w=lineupWizard;if(!w)return;
  if(w.step===0){
-  updateHomeQuarterSelection();
-  if(w.homeSelection.length!==5){alert('自チームの出場選手を5人選んでください。');return}
-  w.step=1;quarterKeypadSlot=0;showQuarterLineupStep();return;
+  if(rosterMethods.home!=='quarter'&&state.home.filter(p=>String(p.no).trim()).length>=5)updateHomeQuarterSelection();
+  const indices=quarterSelectedIndices('home');if(!indices)return;
+  if(indices.length!==5||new Set(indices).size!==5){alert('自チームの5人を選択してください');return}
+  w.selectedHome=indices;w.step=1;quarterKeypadSlot=0;showQuarterLineupStep();return;
  }
- const nums=w.numbers.away.map(n=>String(Number(n)));
- const msg=validateQuarterNumbers(nums);if(msg){alert(msg);return}
- if(w.homeSelection.length!==5||new Set(w.homeSelection).size!==5||w.homeSelection.some(i=>!state.home[i])){alert('自チームの5人を選び直してください。');w.step=0;showQuarterLineupStep();return}
- const awayIndices=nums.map(no=>{
-  let idx=state.away.findIndex(p=>String(Number(p.no))===no);
-  if(idx<0){idx=state.away.length;state.away.push({no,name:'',events:[]})}
-  return idx;
- });
- currentPeriod=w.target;historyPeriod=currentPeriod;
- state.lineups.home=[...w.homeSelection];state.lineups.away=awayIndices;
+ if(rosterMethods.away!=='quarter'&&state.away.filter(p=>String(p.no).trim()).length>=5)updateAwayQuarterSelection();
+ const indices=quarterSelectedIndices('away');if(!indices)return;
+ if(indices.length!==5||new Set(indices).size!==5){alert('相手チームの5人を選択してください');return}
+ currentPeriod=w.target;historyPeriod=currentPeriod;state.lineups.home=[...w.selectedHome];state.lineups.away=[...indices];
  for(const side of ['home','away'])markParticipation(side,currentPeriod);
- state.periodLineups=state.periodLineups||{};
- state.periodLineups[currentPeriod]={home:[...state.lineups.home],away:[...awayIndices]};
- selectedPlayer=null;pendingCode=null;swapTeam=null;swapOut=null;
- lineupWizard=null;saveAll();renderRosters();closeModal();refresh();
+ state.periodLineups=state.periodLineups||{};state.periodLineups[currentPeriod]={home:[...w.selectedHome],away:[...indices]};
+ selectedPlayer=null;pendingCode=null;swapTeam=null;swapOut=null;lineupWizard=null;saveAll();renderRosters();closeModal();refresh();
 }
 function participationSlash(t,i,q){return state.participationMarks?.[t]?.[q]?.includes(i)?'/':''}
 function openSub(t){
