@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.54 iPad mini・iPhone・iPad オフラインHTML</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.55 iPad mini・iPhone・iPad オフラインHTML</title>
 <style>
 :root{--navy:#183153;--blue:#245ca6;--bg:#edf1f6;--line:#c8d1dc;--green:#e7f5eb;--red:#fff0ef}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182333;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
@@ -619,6 +619,30 @@ body.record-active #record>.scorebar .muted{display:none}
 .multi-sub-dialog .sub-choice small{color:#cbd5e1}
 .multi-sub-dialog .sub-confirm-bar{position:sticky;bottom:0;background:#17191d;padding:10px 0;z-index:2}
 @media(max-width:500px){.multi-sub-dialog .sub-two-cols{grid-template-columns:1fr}.multi-sub-dialog .sub-choice-grid{max-height:22dvh;grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Ver.55 explicit stacking order: record controls < scoreboard < application menu */
+body.record-active>.app-header{z-index:120!important;isolation:isolate;overflow:visible!important}
+body.record-active .menu-wrap{z-index:121!important}
+body.record-active .app-menu{z-index:122!important}
+body.record-active #record{isolation:isolate}
+body.record-active #record .record-layout,body.record-active #record .recent-card{position:relative;z-index:1!important}
+body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
+@media screen and (min-width:701px){body.record-active #record>.scorebar{position:relative!important;z-index:50!important}}
+/* Modal always stays above menu, scoreboard, and keypad. */
+#modalRoot{position:relative;z-index:300!important}
+#modalRoot .modal-shade{z-index:300!important}
+.quarter-keypad-dialog .quarter-number-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:12px 0}
+.quarter-keypad-dialog .quarter-number-slot{padding:7px 2px;min-width:0;min-height:66px;background:#26313f;color:white;border:2px solid #63748b}
+.quarter-keypad-dialog .quarter-number-slot.keypad-active{border-color:#ffc84b;background:#344e69}
+.quarter-keypad-dialog .quarter-number-slot small{display:block;font-size:10px;color:#d5e0ee}
+.quarter-keypad-dialog .quarter-number-slot strong{display:block;font-size:23px}
+.quarter-keypad-dialog .quarter-keypad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-width:360px;margin:auto}
+.quarter-keypad-dialog .quarter-keypad button{min-height:55px;font-size:22px;background:#2c3542;color:#fff;border-color:#657184}
+.quarter-keypad-dialog .quarter-keypad .keypad-delete{font-size:16px;background:#603c40}
+.quarter-keypad-dialog .quarter-number-status{margin:10px 0;padding:7px;background:#dff2e6;color:#155b32;border-radius:7px;font-weight:700}
+.quarter-keypad-dialog .quarter-number-status.invalid{background:#fff1d8;color:#754a00}
+.quarter-keypad-dialog .quarter-keypad-actions{position:sticky;bottom:0;background:#fff;padding:8px 0}
+@media(max-height:650px){.quarter-keypad-dialog .quarter-keypad button{min-height:39px}.quarter-keypad-dialog .quarter-number-slot{min-height:48px}}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -747,7 +771,7 @@ function changeQuarter(value){
 }
 function beginQuarterLineup(target,isStart){
  ensureLineups();
- lineupWizard={target,previous:currentPeriod,isStart:!!isStart,step:0,choices:{home:[],away:[]}};
+ lineupWizard={target,previous:currentPeriod,isStart:!!isStart,step:0,numbers:{}};quarterKeypadSlot=0;
  showQuarterLineupStep();
 }
 function cancelQuarterLineup(){
@@ -757,28 +781,75 @@ function cancelQuarterLineup(){
  closeModal();refresh();
  if(wasStart)openStartup();
 }
+// Ver.55: quarter lineup is entered by jersey number, using an on-screen keypad.
+let quarterKeypadSlot=0;
+function quarterNumbers(t){
+ const w=lineupWizard;
+ if(!w)return [];
+ if(Array.isArray(w.numbers?.[t])&&w.numbers[t].length===5)return w.numbers[t];
+ const prev=(state.lineups[t]||[]).map(i=>String(state[t][i]?.no??''));
+ return Array.from({length:5},(_,i)=>prev[i]||'');
+}
 function showQuarterLineupStep(){
  const w=lineupWizard;if(!w)return;
  const t=w.step===0?'home':'away';
- const checked=w.choices[t].length?w.choices[t]:((state.lineups[t]||[]).length===5?state.lineups[t]:[]);
- const rows=state[t].map((p,i)=>`<label class="quarter-player-choice"><input type="checkbox" class="quarterCheck" value="${i}" ${checked.includes(i)?'checked':''} onchange="updateQuarterCount()"><span>${esc(playerLabel(p))}</span></label>`).join('');
- openModal(`<div class="quarter-dialog"><h2>${periodName(w.target)} 出場選手の設定</h2><p class="muted">${w.step+1}/2：${esc(teamLabel(t))} の出場する5人を選択してください。</p><div class="quarter-counter" id="quarterCounter">選択中：${checked.length} / 5人</div><div class="quarter-choice-grid">${rows}</div><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="nextQuarterLineup()">${w.step===0?'相手チームへ →':'両チームを確定して'+periodName(w.target)+'へ'}</button><button onclick="cancelQuarterLineup()">キャンセル</button></div></div>`);
+ w.numbers=w.numbers||{};
+ w.numbers[t]=quarterNumbers(t);
+ quarterKeypadSlot=Math.min(quarterKeypadSlot,4);
+ const nums=w.numbers[t];
+ const slots=nums.map((n,i)=>`<button type="button" class="quarter-number-slot ${i===quarterKeypadSlot?'keypad-active':''}" onclick="selectQuarterSlot(${i})" aria-label="${i+1}人目 背番号${esc(n||'未入力')}"><small>${i+1}人目</small><strong>${esc(n||'—')}</strong></button>`).join('');
+ const keys=['1','2','3','4','5','6','7','8','9','消去','0','次へ'];
+ openModal(`<div class="quarter-keypad-dialog"><h2>${esc(periodName(w.target))} 出場選手5人の入力</h2><p class="muted">${w.step+1}/2：${esc(teamLabel(t))} の背番号を5人分入力してください。既存の背番号はそのまま使用し、未登録の番号は名前空欄で自動追加します。</p><div class="quarter-number-slots">${slots}</div><div class="quarter-keypad">${keys.map(k=>`<button type="button" class="${k==='消去'?'keypad-delete':''}" onclick="quarterKeyPress('${k}')">${k}</button>`).join('')}</div><div id="quarterNumberStatus" class="quarter-number-status" aria-live="polite"></div><div class="toolbar quarter-keypad-actions"><button class="primary" onclick="nextQuarterLineup()">${w.step===0?'相手チームへ →':'両チームを確定して'+periodName(w.target)+'へ'}</button><button onclick="cancelQuarterLineup()">キャンセル</button></div></div>`);
+ updateQuarterNumberStatus();
 }
-function updateQuarterCount(){const n=document.querySelectorAll('.quarterCheck:checked').length;const e=$('quarterCounter');if(e)e.textContent='選択中：'+n+' / 5人'}
+function selectQuarterSlot(i){quarterKeypadSlot=i;showQuarterLineupStep()}
+function quarterKeyPress(key){
+ const w=lineupWizard;if(!w)return;
+ const t=w.step===0?'home':'away', nums=w.numbers[t];
+ if(key==='次へ'){quarterKeypadSlot=(quarterKeypadSlot+1)%5;showQuarterLineupStep();return}
+ if(key==='消去'){nums[quarterKeypadSlot]='';showQuarterLineupStep();return}
+ if(!/^\d$/.test(key))return;
+ let next=(nums[quarterKeypadSlot]||'')+key;
+ if(next.length>3)return;
+ nums[quarterKeypadSlot]=String(Number(next));
+ // For single-digit jerseys, automatically advance to the next empty slot.
+ if(next.length===1&&quarterKeypadSlot<4&&!nums[quarterKeypadSlot+1])quarterKeypadSlot++;
+ showQuarterLineupStep();
+}
+function validateQuarterNumbers(nums){
+ if(nums.length!==5||nums.some(n=>!/^\d+$/.test(n)))return '5人全員の背番号を入力してください。';
+ if(new Set(nums.map(n=>String(Number(n)))).size!==5)return '同じ背番号が重複しています。5人の番号を確認してください。';
+ return '';
+}
+function updateQuarterNumberStatus(){
+ const w=lineupWizard;if(!w)return;
+ const nums=w.numbers[w.step===0?'home':'away'];
+ const msg=validateQuarterNumbers(nums);
+ const el=$('quarterNumberStatus');if(el){el.textContent=msg||'5人の背番号が揃いました。確定できます。';el.classList.toggle('invalid',!!msg)}
+}
 function nextQuarterLineup(){
  const w=lineupWizard;if(!w)return;
  const t=w.step===0?'home':'away';
- const arr=[...document.querySelectorAll('.quarterCheck:checked')].map(e=>Number(e.value));
- if(arr.length!==5){alert('出場する選手をちょうど5人選択してください（現在'+arr.length+'人）');return}
- w.choices[t]=arr;
- if(w.step===0){w.step=1;showQuarterLineupStep();return}
- // 両チームの5人が揃うまで、ピリオドと出場記録を更新しない。
+ const nums=w.numbers[t].map(n=>String(Number(n)));
+ const msg=validateQuarterNumbers(nums);if(msg){alert(msg);return}
+ w.numbers[t]=nums;
+ if(w.step===0){w.step=1;quarterKeypadSlot=0;showQuarterLineupStep();return}
+ // Commit atomically: do not add players or change Q until both teams are valid.
+ const newIndices={};
+ for(const side of ['home','away']){
+  const numbers=w.numbers[side];
+  const err=validateQuarterNumbers(numbers);if(err){alert(side+'：'+err);return}
+  newIndices[side]=numbers.map(no=>{
+   let idx=state[side].findIndex(p=>String(Number(p.no))===no);
+   if(idx<0){idx=state[side].length;state[side].push({no,name:'',events:[]})}
+   return idx;
+  });
+ }
  currentPeriod=w.target;historyPeriod=currentPeriod;
- state.lineups.home=[...w.choices.home];
- state.lineups.away=[...w.choices.away];
+ state.lineups.home=newIndices.home;state.lineups.away=newIndices.away;
  for(const side of ['home','away'])markParticipation(side,currentPeriod);
  state.periodLineups=state.periodLineups||{};
- state.periodLineups[currentPeriod]={home:[...w.choices.home],away:[...w.choices.away]};
+ state.periodLineups[currentPeriod]={home:[...newIndices.home],away:[...newIndices.away]};
  selectedPlayer=null;pendingCode=null;swapTeam=null;swapOut=null;
  lineupWizard=null;saveAll();closeModal();refresh();
 }
