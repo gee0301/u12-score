@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.55 iPad mini・iPhone・iPad オフラインHTML</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#183153"><meta name="apple-mobile-web-app-title" content="U12スタッツ"><title>U12 デジタルスコアシート Ver.56 iPad mini・iPhone・iPad オフラインHTML</title>
 <style>
 :root{--navy:#183153;--blue:#245ca6;--bg:#edf1f6;--line:#c8d1dc;--green:#e7f5eb;--red:#fff0ef}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182333;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
@@ -643,6 +643,59 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 .quarter-keypad-dialog .quarter-number-status.invalid{background:#fff1d8;color:#754a00}
 .quarter-keypad-dialog .quarter-keypad-actions{position:sticky;bottom:0;background:#fff;padding:8px 0}
 @media(max-height:650px){.quarter-keypad-dialog .quarter-keypad button{min-height:39px}.quarter-keypad-dialog .quarter-number-slot{min-height:48px}}
+
+/* Ver.56: phone landscape (iPhone / Android) - fit score, commands and Q history
+   into viewport with independent scrolling. Overrides previous tablet/phone rules. */
+@media screen and (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+ html{height:100%;overflow:hidden!important}
+ body.record-active{height:100dvh!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+ body.record-active>.app-header{flex:0 0 auto!important;min-height:0!important;position:relative!important;z-index:120!important;padding:3px max(7px,env(safe-area-inset-right)) 3px max(7px,env(safe-area-inset-left))!important}
+ body.record-active>.app-header h1{font-size:12px!important;margin:0!important}
+ body.record-active .menu-toggle{min-height:32px!important;min-width:80px!important;padding:3px 7px!important;font-size:12px!important}
+ body.record-active>main{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding:3px max(5px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))!important}
+ body.record-active #record.page.active{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;gap:4px!important}
+ body.record-active #record>.scorebar{flex:0 0 auto!important;position:relative!important;top:auto!important;z-index:50!important;min-height:0!important;margin:0!important;padding:2px 5px!important;gap:3px!important;border-width:1px!important;box-shadow:none!important}
+ body.record-active #record #homeScore,body.record-active #record #awayScore{font-size:clamp(27px,5.5dvh,38px)!important;line-height:1!important}
+ body.record-active #record #homeLabel,body.record-active #record #awayLabel{font-size:clamp(10px,2.3dvh,13px)!important;line-height:1!important}
+ body.record-active #record #periodLabel{font-size:clamp(19px,4dvh,26px)!important;line-height:1!important}
+ body.record-active #record #periodSelect{min-height:28px!important;height:28px!important;font-size:12px!important;padding:2px!important;margin:0!important}
+ body.record-active #record .record-layout{display:grid!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;grid-template-columns:minmax(0,1fr) minmax(210px,1.28fr) minmax(0,1fr)!important;gap:4px!important;align-items:stretch!important;margin:0!important}
+ body.record-active #record .record-layout>.card{min-height:0!important;min-width:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;margin:0!important;padding:4px!important;position:relative!important;top:auto!important}
+ body.record-active #record .center-commands{grid-column:2!important;grid-row:1!important;display:block!important;visibility:visible!important;position:relative!important;top:auto!important}
+ body.record-active #record .team-panel:first-child{grid-column:1!important;grid-row:1!important}
+ body.record-active #record .team-panel:last-child{grid-column:3!important;grid-row:1!important}
+ body.record-active #record .center-commands h2,body.record-active #record .team-panel h2{font-size:12px!important;margin:1px 0 3px!important}
+ body.record-active #record .center-commands .selected-banner{font-size:10px!important;padding:3px!important;margin:0 0 3px!important}
+ body.record-active #record .center-commands>p.muted{display:none!important}
+ body.record-active #record .center-commands .statgrid,body.record-active #record .statgrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:minmax(35px,auto)!important;gap:3px!important}
+ body.record-active #record .center-commands .statbtn{min-height:35px!important;padding:3px 1px!important;line-height:1.05!important}
+ body.record-active #record .center-commands .statbtn b{font-size:clamp(10px,1.5vw,12px)!important;line-height:1.1!important}
+ body.record-active #record .center-commands .statbtn small{font-size:9px!important}
+ body.record-active #record .statbtn[data-code="FT"]{grid-column:3!important;grid-row:1/span 2!important;min-height:73px!important}
+ body.record-active #record .court-five{grid-template-columns:1fr!important;gap:3px!important}
+ body.record-active #record .court-five .player{min-height:34px!important;padding:3px 2px!important}
+ body.record-active #record .court-five .player strong{font-size:11px!important}
+ body.record-active #record .team-panel h3{font-size:11px!important;margin:3px 0!important}
+ body.record-active #record .period-team-fouls{font-size:10px!important;padding:3px!important;margin:2px 0!important}
+ body.record-active #record .team-panel .toolbar{margin:3px 0!important;gap:3px!important}
+ body.record-active #record .team-panel .toolbar button{min-height:32px!important;padding:3px!important;font-size:10px!important}
+ body.record-active #record .recent-card{flex:0 0 clamp(78px,23dvh,125px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;padding:3px 6px!important;margin:0!important}
+ body.record-active #record .recent-card .recent-heading{flex:0 0 auto!important;display:flex!important;align-items:center!important;gap:5px!important;margin:0!important}
+ body.record-active #record .recent-card .recent-heading h2{font-size:12px!important;margin:0!important}
+ body.record-active #record .recent-card .history-period-picker{font-size:10px!important;display:flex!important;align-items:center!important;gap:4px!important}
+ body.record-active #record .recent-card .history-period-picker select{min-height:27px!important;height:27px!important;margin:0!important;padding:1px!important;font-size:11px!important}
+ body.record-active #record .recent-card>p.muted{display:none!important}
+ body.record-active #record .recent-card .log{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important}
+ body.record-active #record .history-actions button{min-height:30px!important;padding:3px 6px!important}
+ body.record-active #record>.toolbar{display:none!important}
+ .modal-shade,.wizard-shade{padding:5px!important}
+ .modal-content,.wizard-box{max-height:calc(100dvh - 10px)!important;overflow-y:auto!important}
+}
+@media screen and (orientation:landscape) and (max-height:600px) and (max-width:640px){
+ body.record-active #record .record-layout{grid-template-columns:minmax(0,1fr) minmax(170px,1.2fr) minmax(0,1fr)!important;gap:3px!important}
+ body.record-active #record .center-commands .statbtn b{font-size:10px!important}
+ body.record-active #record .recent-card{flex-basis:80px!important}
+}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
