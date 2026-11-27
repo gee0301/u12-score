@@ -843,6 +843,42 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
   body.record-active #record .recent-card{flex-basis:66px!important}
 }
 
+
+/* Ver.68: choose history visibility on landscape phones and iPad mini */
+.history-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.history-mode-picker{display:none;align-items:center;gap:5px;font-size:12px}
+.history-mode-picker select{min-height:38px;height:38px;padding:3px 7px;font-size:12px}
+@media screen and (orientation:landscape){
+ .history-mode-picker{display:flex}
+ .history-controls{justify-content:flex-end}
+ body.history-mode-two #record .recent-card .logrow:nth-child(n+3){display:none!important}
+ body.history-mode-two #record .recent-card .log{max-height:none!important;overflow:visible!important}
+ body.history-mode-two #record .recent-card{flex:0 0 auto!important;max-height:none!important;overflow:visible!important}
+ body.history-mode-always #record .recent-card{
+   position:sticky!important;bottom:0!important;z-index:35!important;
+   display:flex!important;flex-direction:column!important;
+   height:clamp(92px,22dvh,170px)!important;max-height:28dvh!important;
+   min-height:0!important;overflow:hidden!important;
+   background:#20252d!important;border:1px solid #626d7d!important;
+   box-shadow:0 -5px 16px #0006!important
+ }
+ body.history-mode-always #record .recent-card .recent-heading{flex:0 0 auto!important}
+ body.history-mode-always #record .recent-card>p.muted{display:none!important}
+ body.history-mode-always #record .recent-card .log{
+   flex:1 1 auto!important;min-height:0!important;max-height:none!important;
+   overflow-y:auto!important;overscroll-behavior:contain!important;
+   -webkit-overflow-scrolling:touch!important
+ }
+ body.history-mode-always #record .recent-card .logrow{padding:3px 2px!important;min-height:30px!important}
+ body.history-mode-always #record .recent-card .history-actions button{min-height:27px!important;padding:2px 5px!important;font-size:10px!important}
+ body.history-mode-always #record .recent-card .history-entry-text{font-size:10px!important}
+}
+@media screen and (orientation:landscape) and (max-width:700px) and (max-height:600px){
+ .history-mode-picker select{min-height:29px;height:29px;font-size:10px}
+ .history-mode-picker{font-size:10px}
+ body.history-mode-always #record .recent-card{height:clamp(76px,20dvh,112px)!important;max-height:24dvh!important}
+}
+
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
@@ -862,7 +898,7 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 <div class="card center-commands"><h2>記録コマンド</h2><div class="selected-banner" id="selectedBanner">中央のコマンドを選び、左右の選手をタップ</div><p class="muted" style="margin:10px 0">① 中央のコマンドを選択 → ② 左右の出場選手をタップ</p><div class="statgrid" id="commandStats"></div><p class="muted" id="commandHint">出場中の選手を選び、中央のコマンドを押してください。</p></div>
 <div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" class="primary" onclick="openSub('away')">選手変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え選手</h3><div class="bench" id="awayBench"></div></div>
 </div>
-<div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴（全件）</h2><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
+<div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴</h2><div class="history-controls"><label class="history-mode-picker">履歴表示<select id="historyDisplayMode" onchange="setHistoryDisplayMode(this.value)"><option value="all">全件表示</option><option value="always">常時表示</option><option value="two">最新2行</option></select></label><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
 <div class="toolbar no-print"><button onclick="show('setup')">選手・設定を変更</button><button class="primary" onclick="show('report')">集計を見る</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div>
 </section>
 <section id="report" class="page">
@@ -1255,6 +1291,22 @@ function commitFTShots(){
  results.forEach((success,j)=>state.events.push({id:Date.now()+'_'+Math.random()+'_'+j,team:t,playerIndex:i,player:playerLabel(state[t][i]),code:success?'FTM':'FTA',ftBatch:batchId,ftShotNumber:j+1,label:success?'FT IN ①':'FT OUT 1',points:success?1:0,period:currentPeriod,time:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}));
  ftTotal=0;window.ftResults=[];pendingCode=null;selectedPlayer=null;saveAll();closeModal();refresh();
 }
+const HISTORY_DISPLAY_KEY='u12_history_display_mode_v1';
+function setHistoryDisplayMode(value){
+ const mode=['always','two','all'].includes(value)?value:'all';
+ try{localStorage.setItem(HISTORY_DISPLAY_KEY,mode)}catch(e){}
+ applyHistoryDisplayMode(mode);
+}
+function applyHistoryDisplayMode(value){
+ const mode=['always','two','all'].includes(value)?value:'all';
+ document.body.classList.remove('history-mode-always','history-mode-two','history-mode-all');
+ document.body.classList.add('history-mode-'+mode);
+ const picker=$('historyDisplayMode');if(picker&&picker.value!==mode)picker.value=mode;
+}
+function initHistoryDisplayMode(){
+ let mode='all';try{mode=localStorage.getItem(HISTORY_DISPLAY_KEY)||'all'}catch(e){}
+ applyHistoryDisplayMode(mode);
+}
 function setHistoryPeriod(value){historyPeriod=value==='all'?'all':Number(value);renderQuarterHistory()}
 function renderQuarterHistory(){
  const picker=$('historyPeriodSelect');if(!picker)return;
@@ -1446,6 +1498,7 @@ function applyNewGame(){
 try{const saved=JSON.parse(localStorage.getItem('u12_home_profile_v22'));if(saved&&Array.isArray(saved.players)){state.homeName=saved.name||'自チーム';state.home=saved.players.map(p=>({no:String(p.no),name:p.name||'',events:[]}));$('homeName').value=state.homeName}}catch(e){}state.gameDate='';$('gameDate').value='';state.gameTime='';$('gameTime').value='';$('matchType').value='';$('awayName').value=state.awayName;seedRoster();ensureLineups();renderRosters();populatePeriods();refresh();show('setup');
 document.querySelectorAll('#setup input,#setup select').forEach(el=>el.addEventListener('change',()=>{syncSettings();refresh()}));
 beginSetupWizard();
+initHistoryDisplayMode();
 </script>
 <script>
 // HTTPS版のオフライン利用状況を表示。記録内容はネットワークに送信しません。
