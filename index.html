@@ -742,6 +742,40 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 }
 .wizard-box .toolbar{margin-top:8px}
 
+/* Ver.64: 試合設定4項目の外枠を統一（日付・時刻の選択機能は維持） */
+.wizard-box input,
+.wizard-box select{
+  width:100%;
+  height:64px;
+  min-height:64px;
+  box-sizing:border-box;
+  border:1px solid #555b64;
+  border-radius:8px;
+  background:#24272d;
+  color:#f4f4f4;
+  font-family:inherit;
+  font-size:clamp(18px,2.2vw,25px);
+  line-height:1.2;
+  padding:12px 18px;
+  text-align:left;
+}
+.wizard-box input[type="date"],
+.wizard-box input[type="time"]{
+  appearance:none;
+  -webkit-appearance:none;
+  text-align:left;
+}
+.wizard-box input[type="date"]::-webkit-date-and-time-value,
+.wizard-box input[type="time"]::-webkit-date-and-time-value{
+  text-align:left;
+  min-height:1.2em;
+}
+.wizard-box input:focus,
+.wizard-box select:focus{
+  outline:2px solid #8aa8d2;
+  outline-offset:1px;
+}
+
 /* Ver.63: compact controls for smartphone landscape; portrait/tablet layouts stay unchanged */
 @media screen and (orientation:landscape) and (max-width:950px) and (max-height:600px){
   html,body{font-size:13px}
