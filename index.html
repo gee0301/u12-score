@@ -32,7 +32,7 @@ table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid 
 .record-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,1.05fr) minmax(0,1fr);gap:10px;align-items:start}
 .team-panel{min-width:0}.court-five{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.court-five button:first-child{grid-column:1/-1}
 .court-five .player{min-height:64px;background:#e9f6ed;border:2px solid #70ae83;text-align:center}.court-five .player.active{background:#ffe9ac;border-color:#d39200}
-.bench{display:flex;flex-wrap:wrap;gap:5px}.bench button{padding:7px;font-size:12px}.center-commands{position:sticky;top:92px}.center-commands .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bench{display:flex;flex-direction:column;align-items:stretch;gap:6px}.bench button{display:block;width:100%;text-align:left;padding:9px 10px;font-size:13px;min-height:42px}.center-commands{position:sticky;top:92px}.center-commands .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .center-commands .statbtn{min-height:52px;padding:6px}.selected-banner{padding:10px;border-radius:8px;background:#edf4ff;margin-bottom:10px;font-weight:700}
 .modal-shade{position:fixed;inset:0;background:#0009;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}.modal-content{background:white;border-radius:14px;padding:18px;width:min(440px,100%);max-height:85vh;overflow:auto}
 textarea{width:100%;min-height:150px;font:inherit;padding:10px;border:1px solid #bbc5d2;border-radius:8px}
@@ -731,9 +731,9 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 <section id="record" class="page">
 <div class="card scorebar"><div><div id="homeLabel">自チーム</div><div class="score" id="homeScore">0</div></div><div><b id="periodLabel">1Q</b><div class="muted">試合スコア</div><select id="periodSelect" onchange="changeQuarter(this.value)"></select></div><div><div id="awayLabel">相手チーム</div><div class="score" id="awayScore">0</div></div></div>
 <div class="record-layout">
-<div class="card team-panel"><h2 id="homeCourtTitle">自チーム</h2><div id="homePeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="homeFive"></div><div class="toolbar" style="margin:9px 0"><button id="homeSwapButton" onclick="openSub('home')">⇄ 複数人交代</button><button onclick="openSub('home')">5人一括変更</button><button onclick="openAdd('home')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="homeBench"></div></div>
+<div class="card team-panel"><h2 id="homeCourtTitle">自チーム</h2><div id="homePeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="homeFive"></div><div class="toolbar" style="margin:9px 0"><button id="homeSwapButton" class="primary" onclick="openSub('home')">選手変更</button><button onclick="openAdd('home')">＋選手</button></div><h3>控え選手</h3><div class="bench" id="homeBench"></div></div>
 <div class="card center-commands"><h2>記録コマンド</h2><div class="selected-banner" id="selectedBanner">中央のコマンドを選び、左右の選手をタップ</div><p class="muted" style="margin:10px 0">① 中央のコマンドを選択 → ② 左右の出場選手をタップ</p><div class="statgrid" id="commandStats"></div><p class="muted" id="commandHint">出場中の選手を選び、中央のコマンドを押してください。</p></div>
-<div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" onclick="openSub('away')">⇄ 複数人交代</button><button onclick="openSub('away')">5人一括変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え・登録選手</h3><div class="bench" id="awayBench"></div></div>
+<div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" class="primary" onclick="openSub('away')">選手変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え選手</h3><div class="bench" id="awayBench"></div></div>
 </div>
 <div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴（全件）</h2><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
 <div class="toolbar no-print"><button onclick="show('setup')">選手・設定を変更</button><button class="primary" onclick="show('report')">集計を見る</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div>
@@ -1003,14 +1003,14 @@ function openSub(t){
  ensureLineups();
  const active=state.lineups[t]||[];
  if(active.length!==5){
-  return openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 交代準備</h2><p>現在の出場選手が${active.length}人です。先に5人を設定してください。</p><div class="toolbar"><button class="primary" onclick="closeModal();openLineupWizardForSub('${t}')">出場5人を設定</button><button onclick="closeModal()">閉じる</button></div></div>`);
+  return openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 選手変更</h2><p>現在の出場選手が${active.length}人です。先に5人を設定してください。</p><div class="toolbar"><button class="primary" onclick="closeModal();openLineupWizardForSub('${t}')">出場5人を設定</button><button onclick="closeModal()">閉じる</button></div></div>`);
  }
  const bench=state[t].map((p,i)=>i).filter(i=>!active.includes(i));
- openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 複数人交代</h2><p class="muted">① 下げる選手を選ぶ → ② 入れる選手を同じ人数だけ選ぶ → ③ 確定。1〜5人を一括交代できます。</p>
+ openModal(`<div class="multi-sub-dialog"><h2>${esc(teamLabel(t))} 選手変更</h2><p class="muted">① 下げる選手を選ぶ → ② 入れる選手を同じ人数だけ選ぶ → ③ 確定。1人から5人まで、同じ画面で変更できます。</p>
  <div class="sub-two-cols"><section><h3>① OUT（下げる選手）</h3><div class="sub-choice-grid">${active.map(i=>`<label class="sub-choice"><input type="checkbox" class="subOut" value="${i}" onchange="updateSubSelection('${t}')"><span>${esc(playerLabel(state[t][i]))}</span></label>`).join('')}</div></section>
  <section><h3>② IN（入れる選手）</h3><div class="sub-choice-grid">${bench.length?bench.map(i=>`<label class="sub-choice"><input type="checkbox" class="subIn" value="${i}" onchange="updateSubSelection('${t}')"><span>${esc(playerLabel(state[t][i]))}</span></label>`).join(''):'<p class="muted">控え選手がいません。選手を追加してください。</p>'}</div></section></div>
  <div id="subSelectionStatus" class="sub-selection-status" aria-live="polite"></div>
- <div class="toolbar sub-confirm-bar"><button class="primary" id="confirmSubButton" onclick="applySub('${t}')">交代を確定</button><button onclick="closeModal()">キャンセル</button></div></div>`);
+ <div class="toolbar sub-confirm-bar"><button class="primary" id="confirmSubButton" onclick="applySub('${t}')">選手変更を確定</button><button onclick="closeModal()">キャンセル</button></div></div>`);
  updateSubSelection(t);
 }
 function openLineupWizardForSub(t){
@@ -1037,14 +1037,14 @@ function updateSubSelection(t){
  const {outs,ins}=subSelections();
  const status=$('subSelectionStatus');if(!status)return;
  const valid=outs.length>0&&outs.length===ins.length;
- status.textContent=valid?`OUT ${outs.length}人 ／ IN ${ins.length}人　→　${outs.length}人の交代を確定できます`:`OUT ${outs.length}人 ／ IN ${ins.length}人　｜　下げる選手と入れる選手を同じ人数（1〜5人）選んでください`;
+ status.textContent=valid?`OUT ${outs.length}人 ／ IN ${ins.length}人　→　${outs.length}人の選手変更を確定できます`:`OUT ${outs.length}人 ／ IN ${ins.length}人　｜　変更する選手を同じ人数（1〜5人）選んでください`;
  status.classList.toggle('sub-invalid',!valid);
  const confirm=$('confirmSubButton');
- if(confirm){confirm.disabled=false;confirm.textContent=valid?`${outs.length}人の交代を確定`:'交代を確定';}
+ if(confirm){confirm.disabled=false;confirm.textContent=valid?`${outs.length}人の選手変更を確定`:'選手変更を確定';}
 }
 function applySub(t){
  const {outs,ins}=subSelections();
- if(!outs.length||outs.length!==ins.length)return alert(`交代人数が一致していません。\nOUT：${outs.length}人　IN：${ins.length}人\n両方を同じ人数にしてください。`);
+ if(!outs.length||outs.length!==ins.length)return alert(`変更する人数が一致していません。\nOUT：${outs.length}人　IN：${ins.length}人\n両方を同じ人数にしてください。`);
  ensureLineups();
  const prev=[...state.lineups[t]];
  if(prev.length!==5)return alert('出場中の5人を先に設定してください');
@@ -1055,7 +1055,7 @@ function applySub(t){
  selectedPlayer=null;swapTeam=null;swapOut=null;
  markParticipation(t);saveAll();closeModal();refresh();
 }
-function startSwap(t){if(swapTeam===t){cancelSwap();return}ensureLineups();if(state.lineups[t].length!==5){alert('まず「5人一括変更」で出場中の5人を設定してください');return}swapTeam=t;swapOut=null;pendingCode=null;refresh()}
+function startSwap(t){if(swapTeam===t){cancelSwap();return}ensureLineups();if(state.lineups[t].length!==5){alert('先に「選手変更」から出場中の5人を設定してください');return}swapTeam=t;swapOut=null;pendingCode=null;refresh()}
 function cancelSwap(){swapTeam=null;swapOut=null;refresh()}
 function swapBench(t,i){if(swapTeam!==t||swapOut===null)return;let lineup=state.lineups[t];if(lineup.includes(i))return;let pos=lineup.indexOf(swapOut);if(pos<0){cancelSwap();return}let outgoing=state[t][swapOut],incoming=state[t][i];lineup[pos]=i;state.substitutions=state.substitutions||[];state.substitutions.push({team:t,period:currentPeriod,from:[outgoing.no],to:[incoming.no],time:new Date().toLocaleTimeString('ja-JP')});selectedTeam=t;selectedPlayer=null;swapTeam=null;swapOut=null;markParticipation(t);saveAll();refresh()}
 function pickCourt(t,i){if(swapTeam){if(t!==swapTeam)return;swapOut=i;refresh();return}if(!pendingCode){$('selectedBanner').textContent='先に中央の記録コマンドをタップしてください';return}selectedTeam=t;selectedPlayer=i;const code=pendingCode;if(record(code,t,i)){pendingCode=null;selectedPlayer=null}refresh()}
@@ -1080,7 +1080,7 @@ function refresh(){
   $(t+'CourtTitle').textContent=teamLabel(t);let active=state.lineups[t];
   $(t+'PeriodFouls').innerHTML=esc(periodName(currentPeriod))+' チームF：<strong>'+quarterTeamFoulCount(t,currentPeriod)+'</strong>';
   $(t+'Five').innerHTML=active.map(i=>`<button class="player ${swapTeam===t&&swapOut===i?'active':selectedTeam===t&&selectedPlayer===i?'active':''}" onclick="pickCourt('${t}',${i})"><strong>${esc(playerLabel(state[t][i]))}<span class="court-foul-count ${personalFoulCount(t,i)>=5?'foul-five':''}">F ${personalFoulCount(t,i)}</span></strong><small>${swapTeam===t?'交代で下がる選手を選択':'出場中'}</small></button>`).join('')+Array.from({length:Math.max(0,5-active.length)},()=>'<div class="player" style="border-style:dashed;text-align:center;color:#8794a5">未設定</div>').join('');
-  $(t+'Bench').innerHTML=state[t].map((p,i)=>active.includes(i)?'':`<button ${swapTeam===t&&swapOut!==null?'class=sel':''} onclick="${swapTeam===t?`swapBench('${t}',${i})`:`startSwap('${t}')` }">${esc(playerLabel(p))}</button>`).join('')||'<span class="muted">控えなし</span>';
+  $(t+'Bench').innerHTML=state[t].map((p,i)=>active.includes(i)?'':`<button type="button" onclick="openSub('${t}')">${esc(playerLabel(p))}</button>`).join('')||'<span class="muted">控えなし</span>';
  }
  for(const t of ['home','away']){$(t+'SwapButton').classList.toggle('sel',swapTeam===t)}
  // コマンド先行方式では旧入力モードのボタンは存在しない。
