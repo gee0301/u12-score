@@ -792,8 +792,12 @@ function loadState(){try{let x=JSON.parse(localStorage.getItem('u12stats_v1'));i
 function setMode(m){entryMode='event';pendingCode=null;refresh()}
 function roundedTimeLocal(){const d=new Date();d.setMinutes(Math.ceil(d.getMinutes()/10)*10,0,0);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function todayLocal(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function seedRoster(){for(const t of ['home','away'])if(!Array.isArray(state[t]))state[t]=[];}
-let rosterMethods={home:'bulk',away:'quarter'};
+function seedRoster(){
+ for(const t of ['home','away'])if(!Array.isArray(state[t]))state[t]=[];
+ // 自チームは初期状態で背番号4〜18を登録。既存の選手・名前・追加番号は保持する。
+ for(let n=4;n<=18;n++)if(!state.home.some(p=>String(p.no??'').trim()===String(n)))state.home.push({no:String(n),name:'',events:[]});
+}
+let rosterMethods={home:'default',away:'quarter'};
 let rosterSetupSide='home';
 function openRosterMethodSetup(side='home'){
  rosterSetupSide=side;
@@ -1298,7 +1302,8 @@ function applyNewGame(){
  const keptHomeName=state.homeName||'自チーム';
  const keptHome=(Array.isArray(state.home)?state.home:[]).map(p=>({no:String(p.no??''),name:String(p.name??''),events:[]}));
  state={matchType:'',eventName:'',gameDate:'',gameTime:'',homeName:keptHomeName,awayName:'',home:keptHome,away:[],events:[],lineups:{home:[],away:[]},participationMarks:{home:{},away:{}}};
- // 相手チームはQごとのテンキー入力で登録するため、初期選手は作成しない。
+ // 自チームは初期メンバー4〜18番を用意。相手チームはQごとに登録する。
+ seedRoster();
  currentPeriod=1;historyPeriod=1;lineupWizard=null;selectedTeam='home';selectedPlayer=null;entryMode='event';pendingCode=null;swapTeam=null;swapOut=null;
  // 先にDOMを初期化してから保存。saveAll はフォームから値を読み取るため順序が重要。
  for(const k of ['eventName','matchType','gameDate','gameTime','homeName','awayName']){
