@@ -717,65 +717,12 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 .quarter-keypad-dialog .quarter-number-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 .quarter-keypad-dialog .quarter-number-slot{min-width:0}
 
-/* Ver.60: 試合設定ウィザード4画面の入力欄を統一 */
+/* 試合設定ウィザードの共通枠 */
 .wizard-box{width:min(850px,94vw)}
 .wizard-box label{display:block;width:100%;box-sizing:border-box}
-.wizard-box input,
-.wizard-box select{
-  display:block;
-  box-sizing:border-box;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  height:64px;
-  min-height:64px;
-  margin:10px 0 14px;
-  padding:12px 18px;
-  font-size:clamp(18px,2.2vw,25px);
-  line-height:1.2;
-}
-.wizard-box input[type="date"],
-.wizard-box input[type="time"]{
-  text-align:center;
-  appearance:auto;
-  -webkit-appearance:auto;
-}
 .wizard-box .toolbar{margin-top:8px}
 
 /* Ver.65: 重複する記録コマンド案内バナーを削除 */
-/* Ver.64: 試合設定4項目の外枠を統一（日付・時刻の選択機能は維持） */
-.wizard-box input,
-.wizard-box select{
-  width:100%;
-  height:64px;
-  min-height:64px;
-  box-sizing:border-box;
-  border:1px solid #555b64;
-  border-radius:8px;
-  background:#24272d;
-  color:#f4f4f4;
-  font-family:inherit;
-  font-size:clamp(18px,2.2vw,25px);
-  line-height:1.2;
-  padding:12px 18px;
-  text-align:left;
-}
-.wizard-box input[type="date"],
-.wizard-box input[type="time"]{
-  appearance:none;
-  -webkit-appearance:none;
-  text-align:left;
-}
-.wizard-box input[type="date"]::-webkit-date-and-time-value,
-.wizard-box input[type="time"]::-webkit-date-and-time-value{
-  text-align:left;
-  min-height:1.2em;
-}
-.wizard-box input:focus,
-.wizard-box select:focus{
-  outline:2px solid #8aa8d2;
-  outline-offset:1px;
-}
 
 /* Ver.63: compact controls for smartphone landscape; portrait/tablet layouts stay unchanged */
 @media screen and (orientation:landscape) and (max-width:950px) and (max-height:600px){
@@ -831,6 +778,69 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
   .quarter-dialog h2{font-size:17px!important}
   .quarter-dialog .quarter-player-choice{min-height:38px!important;padding:5px 7px!important;font-size:12px!important}
   .quarter-dialog .quarter-player-choice input{width:18px;height:18px}
+}
+
+
+/* Ver.67: phone landscape density pass; tablet and portrait layouts are untouched */
+@media screen and (orientation:landscape) and (max-height:600px) and (max-width:950px){
+  html,body{font-size:13px}
+  body.record-active>.app-header{padding-top:2px!important;padding-bottom:2px!important}
+  body.record-active>.app-header h1{font-size:11px!important}
+  body.record-active .menu-toggle{min-height:30px!important;padding:3px 7px!important;font-size:11px!important}
+  body.record-active>main{padding-top:2px!important;padding-bottom:2px!important}
+  body.record-active #record.page.active{gap:3px!important}
+  body.record-active #record>.scorebar{padding:2px 4px!important;gap:2px!important}
+  body.record-active #record #homeScore,
+  body.record-active #record #awayScore{font-size:clamp(25px,5.1dvh,34px)!important;line-height:1!important}
+  body.record-active #record #homeLabel,
+  body.record-active #record #awayLabel{font-size:clamp(9px,2.1dvh,12px)!important;line-height:1!important}
+  body.record-active #record #periodLabel{font-size:clamp(18px,3.7dvh,23px)!important;line-height:1!important}
+  body.record-active #record #periodSelect{height:27px!important;min-height:27px!important;font-size:11px!important;padding:1px 3px!important}
+  body.record-active #record .record-layout{
+    grid-template-columns:minmax(0,1fr) minmax(165px,1.12fr) minmax(0,1fr)!important;
+    gap:3px!important
+  }
+  body.record-active #record .record-layout>.card{padding:3px!important}
+  body.record-active #record .center-commands h2,
+  body.record-active #record .team-panel h2{font-size:11px!important;margin:0 0 2px!important}
+  body.record-active #record .center-commands .selected-banner{font-size:9px!important;padding:2px!important;margin:0 0 2px!important}
+  body.record-active #record .center-commands .statgrid{gap:2px!important;grid-auto-rows:minmax(33px,auto)!important}
+  body.record-active #record .center-commands .statbtn{min-height:33px!important;padding:2px 1px!important}
+  body.record-active #record .center-commands .statbtn b{font-size:10px!important;line-height:1!important}
+  body.record-active #record .center-commands .statbtn small{font-size:8px!important}
+  body.record-active #record .statbtn[data-code="FT"]{min-height:68px!important}
+  body.record-active #record .team-panel h3{font-size:10px!important;margin:2px 0!important}
+  body.record-active #record .period-team-fouls{font-size:9px!important;padding:2px!important;margin:2px 0!important}
+  body.record-active #record .court-five{gap:2px!important}
+  body.record-active #record .court-five .player{min-height:31px!important;padding:2px!important}
+  body.record-active #record .court-five .player strong{font-size:10px!important}
+  body.record-active #record .team-panel .toolbar{gap:2px!important;margin:2px 0!important}
+  body.record-active #record .team-panel .toolbar button{min-height:30px!important;padding:2px 3px!important;font-size:9px!important}
+  body.record-active #record .team-panel .bench{gap:2px!important}
+  body.record-active #record .team-panel .bench button{min-height:29px!important;padding:2px 4px!important;font-size:9px!important}
+  body.record-active #record .recent-card{flex-basis:clamp(68px,18dvh,94px)!important;padding:2px 4px!important}
+  body.record-active #record .recent-card .recent-heading h2{font-size:10px!important}
+  body.record-active #record .recent-card .history-period-picker{font-size:9px!important}
+  body.record-active #record .recent-card .history-period-picker select{height:24px!important;min-height:24px!important;font-size:10px!important}
+  body.record-active #record .history-entry-text{font-size:9px!important}
+  body.record-active #record .history-actions button{min-height:28px!important;padding:2px 4px!important;font-size:9px!important}
+  /* Setup and report screens also use the available landscape height efficiently. */
+  #setup .card,#report .card{padding:5px!important;margin-bottom:4px!important}
+  #setup h2,#report h2{font-size:13px!important;margin-bottom:4px!important}
+  #setup label,#report label,.muted{font-size:10px!important}
+  #setup input,#setup select,#report input,#report select{min-height:34px!important;height:36px!important;padding:4px 6px!important;margin-top:2px!important;font-size:12px!important}
+  #setup .grid,#report .grid{gap:4px!important}
+  #setup .toolbar,#report .toolbar{gap:3px!important}
+  #setup button,#report button{min-height:32px!important;padding:4px 6px!important;font-size:10px!important}
+  .wizard-box input,.wizard-box select{height:40px!important;min-height:40px!important;padding:5px 8px!important;margin:4px 0 7px!important;font-size:15px!important}
+  .modal-shade,.wizard-shade{padding:4px!important}
+  .modal-content,.wizard-box{max-height:calc(100dvh - 8px)!important;overflow-y:auto!important}
+  .quarter-dialog .quarter-player-choice{min-height:32px!important;padding:3px 5px!important;font-size:10px!important}
+  .small-add-keys button,.quarter-keypad-dialog .quarter-keypad button{min-height:34px!important}
+}
+@media screen and (orientation:landscape) and (max-height:600px) and (max-width:700px){
+  body.record-active #record .record-layout{grid-template-columns:minmax(0,1fr) minmax(150px,1.08fr) minmax(0,1fr)!important}
+  body.record-active #record .recent-card{flex-basis:66px!important}
 }
 
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
@@ -969,7 +979,7 @@ function openModal(html){$('modalRoot').innerHTML='<div class="modal-shade" oncl
 function closeModal(){$('modalRoot').innerHTML=''}
 function openBulk(t){openModal(`<h2>${esc(teamLabel(t))} 一括登録</h2><p class="muted">チーム名は省略可。数字で始まる行は必ず選手として認識し、先頭の数字以降を名前として登録します（例：4あき、４　あき）。既存の選手と記録は残し、重複背番号は追加しません。</p><textarea id="bulkText" placeholder="SUNRISE\n4 山田\n5 田中\n6 佐藤"></textarea><div class="toolbar" style="margin-top:10px"><button class="primary" onclick="importBulk('${t}')">取り込む</button><button onclick="closeModal()">閉じる</button></div>`)}
 function importBulk(t){let lines=normalizeRosterText($('bulkText').value).split('\n').map(x=>x.trim()).filter(Boolean);if(!lines.length)return alert('貼り付けてください');let first=lines[0];if(!/^\d/.test(first)){state[t+'Name']=first;$(t+'Name').value=first;lines.shift()}let count=0,updated=0;for(const line of lines){let m=line.match(/^(\d+)(.*)$/);if(!m)continue;let no=String(Number(m[1])),name=m[2].replace(/^[\s,，、]+/,'').trim();let existing=state[t].find(p=>String(p.no).trim()===no);if(existing){if(name){existing.name=name;updated++}continue}state[t].push({no,name,events:[]});count++}ensureLineups();renderRosters();saveAll();closeModal();refresh();alert('新規登録：'+count+'件\n既存選手の名前更新：'+updated+'件\n合計反映：'+(count+updated)+'件')}
-function openAdd(t){openSmallKeypadAdd(t);return;openModal(`<h2>${esc(teamLabel(t))} 選手・背番号の追加</h2><p class="muted">初期登録の4〜18番以外も、任意の背番号で追加できます。既にある背番号は重複登録できません。</p><label>追加する背番号（必須）<input id="newNo" type="number" min="0" step="1" inputmode="numeric" placeholder="例：19" autocomplete="off"></label><label style="margin-top:12px">選手名（任意）<input id="newName" placeholder="例：山田" autocomplete="off"></label><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="submitAdd('${t}',true)">追加して続ける</button><button onclick="submitAdd('${t}',false)">追加して閉じる</button><button onclick="closeModal()">キャンセル</button></div>`)}
+function openAdd(t){openSmallKeypadAdd(t)}
 let addKeypadDigits='';
 function openSmallKeypadAdd(t){addKeypadDigits='';renderSmallKeypadAdd(t)}
 function renderSmallKeypadAdd(t){
@@ -978,7 +988,6 @@ function renderSmallKeypadAdd(t){
 }
 function pressSmallAddKey(t,key){if(key==='消去')addKeypadDigits='';else if(key==='←')addKeypadDigits=addKeypadDigits.slice(0,-1);else if(addKeypadDigits.length<3)addKeypadDigits+=key;const el=$('smallAddNumber');if(el)el.textContent=addKeypadDigits||'—'}
 function commitSmallAdd(t){if(!/^\d{1,3}$/.test(addKeypadDigits))return alert('背番号を入力してください');const no=String(Number(addKeypadDigits));if(state[t].some(p=>String(Number(p.no))===no)){const el=$('smallAddStatus');if(el)el.textContent=`#${no} は登録済みです。別の番号を入力してください。`;addKeypadDigits='';$('smallAddNumber').textContent='—';return}state[t].push({no,name:'',events:[]});addKeypadDigits='';renderRosters();saveAll();refresh();renderSmallKeypadAdd(t);$('smallAddStatus').textContent=`#${no} を追加しました。現在${state[t].length}人登録。次の番号を入力できます。`}
-function submitAdd(t,keepOpen=false){let no=$('newNo').value.trim(),name=$('newName').value.trim();if(!/^\d+$/.test(no))return alert('背番号を数字で入力してください');no=String(Number(no));if(state[t].some(p=>String(p.no).trim()===no))return alert('背番号 '+no+' は既に登録済みです。既存の選手欄で名前を編集できます。');state[t].push({no,name,events:[]});renderRosters();saveAll();refresh();if(keepOpen){$('newNo').value='';$('newName').value='';$('newNo').focus()}else closeModal()}
 function markParticipation(t,period=currentPeriod){
  if(period<1||period>4)return;
  ensureLineups();state.participationMarks=state.participationMarks||{home:{},away:{}};
