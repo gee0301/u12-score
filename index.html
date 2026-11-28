@@ -937,6 +937,30 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
  }
  .multi-sub-dialog .sub-choice small{width:auto!important;padding-left:0!important}
 }
+
+/* Ver.72: enlarge player labels and selection controls without changing lineup logic */
+.quarter-home-option,
+.multi-sub-dialog .sub-choice{
+  min-height:50px!important;
+  padding:10px!important;
+  gap:10px!important;
+  font-size:17px!important;
+  line-height:1.35!important;
+}
+.quarter-home-option input[type="checkbox"],
+.multi-sub-dialog .sub-choice input[type="checkbox"]{
+  width:25px!important;
+  min-width:25px!important;
+  height:25px!important;
+  min-height:25px!important;
+  flex-basis:25px!important;
+}
+.quarter-home-option span,
+.multi-sub-dialog .sub-choice span{
+  font-size:17px!important;
+  line-height:1.4!important;
+  font-weight:600!important;
+}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
