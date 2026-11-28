@@ -961,6 +961,43 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
   line-height:1.4!important;
   font-weight:600!important;
 }
+
+/* Ver.73: responsive player-picker sizing by available device viewport */
+.quarter-home-option,.multi-sub-dialog .sub-choice{
+  font-size:clamp(16px,1.8vw,19px)!important;
+  min-height:clamp(48px,5.2vw,56px)!important;
+  padding:clamp(8px,1.1vw,12px)!important;
+  gap:clamp(8px,1vw,11px)!important;
+}
+.quarter-home-option span,.multi-sub-dialog .sub-choice span{
+  font-size:clamp(16px,1.8vw,19px)!important;
+  line-height:1.4!important;
+}
+.quarter-home-option input[type="checkbox"],.multi-sub-dialog .sub-choice input[type="checkbox"]{
+  width:clamp(23px,2.5vw,27px)!important;
+  min-width:clamp(23px,2.5vw,27px)!important;
+  height:clamp(23px,2.5vw,27px)!important;
+  min-height:clamp(23px,2.5vw,27px)!important;
+  flex-basis:clamp(23px,2.5vw,27px)!important;
+}
+/* Compact phone portrait: iPhone and Android */
+@media screen and (orientation:portrait) and (max-width:700px){
+ .quarter-home-option,.multi-sub-dialog .sub-choice{font-size:16px!important;min-height:49px!important;padding:8px!important;gap:8px!important}
+ .quarter-home-option span,.multi-sub-dialog .sub-choice span{font-size:16px!important}
+ .quarter-home-option input[type="checkbox"],.multi-sub-dialog .sub-choice input[type="checkbox"]{width:24px!important;min-width:24px!important;height:24px!important;min-height:24px!important;flex-basis:24px!important}
+}
+/* Phone landscape: keep rows readable while preserving vertical space */
+@media screen and (orientation:landscape) and (max-width:700px) and (max-height:600px){
+ .quarter-home-option,.multi-sub-dialog .sub-choice{font-size:15px!important;min-height:43px!important;padding:6px 8px!important;gap:7px!important}
+ .quarter-home-option span,.multi-sub-dialog .sub-choice span{font-size:15px!important}
+ .quarter-home-option input[type="checkbox"],.multi-sub-dialog .sub-choice input[type="checkbox"]{width:22px!important;min-width:22px!important;height:22px!important;min-height:22px!important;flex-basis:22px!important}
+}
+/* iPad mini and other compact tablets */
+@media screen and (min-width:701px) and (max-width:1100px){
+ .quarter-home-option,.multi-sub-dialog .sub-choice{font-size:19px!important;min-height:56px!important;padding:12px!important;gap:11px!important}
+ .quarter-home-option span,.multi-sub-dialog .sub-choice span{font-size:19px!important}
+ .quarter-home-option input[type="checkbox"],.multi-sub-dialog .sub-choice input[type="checkbox"]{width:27px!important;min-width:27px!important;height:27px!important;min-height:27px!important;flex-basis:27px!important}
+}
 </style></head><body><div id="offlineStatus" role="status" aria-live="polite" style="position:fixed;bottom:calc(8px + env(safe-area-inset-bottom, 0px));right:8px;z-index:9000;background:#252b36;color:#fff;border:1px solid #697384;border-radius:9px;padding:6px 10px;font:600 12px system-ui,sans-serif;max-width:65vw;box-shadow:0 2px 9px #0005">オフライン準備を確認中…</div>
 <header class="no-print app-header"><h1>U12 バスケットボール スタッツ記録</h1><div class="menu-wrap"><button id="menuToggle" class="menu-toggle" type="button" onclick="toggleAppMenu()" aria-expanded="false" aria-controls="appMenu">☰ メニュー</button><nav id="appMenu" class="app-menu" hidden><button onclick="menuGo('setup')">試合設定</button><button onclick="menuGo('record')">試合記録</button><button onclick="menuGo('report')">集計・出力</button></nav></div></header><main>
 <section id="setup" class="page active">
