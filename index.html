@@ -898,7 +898,7 @@ body.record-active #record>.scorebar{z-index:50!important;isolation:isolate}
 <div class="card center-commands"><h2>記録コマンド</h2><div class="selected-banner" id="selectedBanner">中央のコマンドを選び、左右の選手をタップ</div><p class="muted" style="margin:10px 0">① 中央のコマンドを選択 → ② 左右の出場選手をタップ</p><div class="statgrid" id="commandStats"></div><p class="muted" id="commandHint">出場中の選手を選び、中央のコマンドを押してください。</p></div>
 <div class="card team-panel"><h2 id="awayCourtTitle">相手チーム</h2><div id="awayPeriodFouls" class="period-team-fouls" aria-live="polite">1Q チームF：0</div><h3>出場中の5人</h3><div class="court-five" id="awayFive"></div><div class="toolbar" style="margin:9px 0"><button id="awaySwapButton" class="primary" onclick="openSub('away')">選手変更</button><button onclick="openAdd('away')">＋選手</button></div><h3>控え選手</h3><div class="bench" id="awayBench"></div></div>
 </div>
-<div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴</h2><div class="history-controls"><label class="history-mode-picker">履歴表示<select id="historyDisplayMode" onchange="setHistoryDisplayMode(this.value)"><option value="all">全件表示</option><option value="always">常時表示</option><option value="two">最新2行</option></select></label><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
+<div class="card recent-card"><div class="recent-heading"><h2>Q別 記録履歴</h2><div class="history-controls"><label class="history-mode-picker">履歴表示<select id="historyDisplayMode" onchange="setHistoryDisplayMode(this.value)"><option value="all">全件表示</option><option value="always">常時表示</option><option value="two">最新2行</option></select></label><label class="history-team-picker">表示するチーム<select id="historyTeamSelect" onchange="setHistoryTeam(this.value)"><option value="all">両チーム</option><option value="home">自チーム</option><option value="away">相手チーム</option></select></label><label class="history-period-picker">表示するQ<select id="historyPeriodSelect" onchange="setHistoryPeriod(this.value)"></select></label></div></div><p class="muted">選択したQの全記録を新しい順に表示します。「訂正」で選手・項目・Qを修正できます。</p><div class="log" id="eventLog"></div></div>
 <div class="toolbar no-print"><button onclick="show('setup')">選手・設定を変更</button><button class="primary" onclick="show('report')">集計を見る</button><button onclick="resetAll()">新しい試合（白紙に戻す）</button></div>
 </section>
 <section id="report" class="page">
@@ -939,7 +939,7 @@ function nextSetupWizard(){
 
 let state={matchType:'',eventName:'',gameDate:'',gameTime:'',homeName:'自チーム',awayName:'相手チーム',home:[],away:[],events:[]};
 let lineupWizard=null;
-let historyPeriod=1;
+let historyPeriod=1;let historyTeam='all';
 let currentPeriod=1,selectedTeam='home',selectedPlayer=null,entryMode='event',pendingCode=null,swapTeam=null,swapOut=null;
 const statDefs=[['2PM','2点IN ②',2],['2PA','2点OUT 2',0],['FT','FT（本数指定）',0],['3PM','3点IN ③',3],['3PA','3点OUT 3',0],['OREB','OR',0],['DREB','DR',0],['PF','F ファール',0],['BLK','ブロック',0],['AST','Ass A',0],['STL','Stel',0],['TO_DRIBBLE','TO ドリブルミス D',0],['TO_PASS','TO パスミス P',0],['TO_TRAVEL','TO トラベリング T',0]];
 function $(id){return document.getElementById(id)}
@@ -1307,14 +1307,17 @@ function initHistoryDisplayMode(){
  let mode='all';try{mode=localStorage.getItem(HISTORY_DISPLAY_KEY)||'all'}catch(e){}
  applyHistoryDisplayMode(mode);
 }
+function setHistoryTeam(value){historyTeam=['home','away'].includes(value)?value:'all';renderQuarterHistory()}
 function setHistoryPeriod(value){historyPeriod=value==='all'?'all':Number(value);renderQuarterHistory()}
 function renderQuarterHistory(){
  const picker=$('historyPeriodSelect');if(!picker)return;
+ const teamPicker=$('historyTeamSelect');if(teamPicker)teamPicker.value=historyTeam;
  const periods=allPeriods();const valid=historyPeriod==='all'||periods.includes(Number(historyPeriod));if(!valid)historyPeriod=currentPeriod;
  picker.innerHTML=periods.map(p=>`<option value="${p}">${periodName(p)}</option>`).join('')+'<option value="all">全Q</option>';
  picker.value=String(historyPeriod);
- const rows=state.events.filter(e=>historyPeriod==='all'||Number(e.period)===Number(historyPeriod)).slice().reverse();
- $('eventLog').innerHTML=rows.map(e=>eventLogRow(e)).join('')||'<p class="muted">このQの記録はまだありません。</p>';
+ const rows=state.events.filter(e=>(historyPeriod==='all'||Number(e.period)===Number(historyPeriod))&&(historyTeam==='all'||e.team===historyTeam)).slice().reverse();
+ const teamName=historyTeam==='home'?teamLabel('home'):historyTeam==='away'?teamLabel('away'):'両チーム';
+ $('eventLog').innerHTML=rows.map(e=>eventLogRow(e)).join('')||`<p class="muted">${esc(teamName)}の${historyPeriod==='all'?'全Q':periodName(Number(historyPeriod))}の記録はまだありません。</p>`;
 }
 function eventLogRow(e){
  const player=state[e.team]?.[e.playerIndex];const name=player?playerLabel(player):(e.player||'選手不明');
